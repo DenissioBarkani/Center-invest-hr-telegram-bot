@@ -41,7 +41,8 @@ const Drawer = styled(MuiDrawer)({
 });
 
 export const SideBar: React.FC = () => {
-    const [login, setLogin] = React.useState(true)
+    // const [login, setLogin] = React.useState(true)
+    const login = false
     return (
         <Drawer
             variant="permanent"
@@ -97,7 +98,7 @@ export const SideBar: React.FC = () => {
 
 
             {
-                login ? (<Button
+                !login ? (<Button
                     component={Link}
                     to="/login"
                     sx={{
@@ -133,6 +134,7 @@ export const SideBar: React.FC = () => {
                             src="/static/images/avatar/7.jpg"
                             sx={{ width: 36, height: 36 }}
                         />
+
                         <Box sx={{ mr: 'auto' }}>
                             <Typography variant="body2" sx={{ fontWeight: 500, lineHeight: '16px' }}>
                                 Riley Carter

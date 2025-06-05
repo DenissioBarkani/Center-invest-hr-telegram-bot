@@ -1,39 +1,23 @@
-
-import { SideBar } from "../components/SideBar";
-import { MainGrid } from "../components/MainGrid";
-
 import Box from '@mui/material/Box';
-import { HeaderV2 } from "../components/HeaderV2";
+import { Button, Stack } from '@mui/material';
+import { Link } from 'react-router-dom';
+import { Header } from "../components/Header";
+import BotsList from "../components/BotsList";
 
 
 const Home: React.FC = () => {
     return (
 
         <Box>
-            <SideBar></SideBar>
-            <Box
-                component="main"
-                ml={'240px'}
-            >
-
-                <Box
-
-
-                    sx={{
-                        alignItems: 'center',
-                        mx: 3,
-                        pb: 5,
-                        mt: { xs: 8, md: 0 },
-                    }}
-                >
-                    <HeaderV2></HeaderV2>
-                    <MainGrid></MainGrid>
-                </Box>
+            <Header title="Боты"></Header>
+            <Box sx={{ width: '100%', maxWidth: { sm: '100%', md: '1000px' } }}>
+                <Stack spacing={2} >
+                    <BotsList />
+                    <Button component={Link}
+                        to="/add-bot" variant='contained' color='success'>Добавить бота</Button>
+                </Stack>
             </Box>
-
         </Box>
-
-
     );
 }
 

@@ -1,64 +1,72 @@
-// src/pages/BotDetailsPage.tsx
-import { useParams } from 'react-router-dom';
-import { Box, Typography, CircularProgress, Container } from '@mui/material';
-import { useEffect, useState } from 'react';
-import { getBotById } from '../api/bots'; // Ваш API-метод
+import {
+    Box,
+    Typography,
+    Paper,
+    Chip,
+    Button,
+    Divider,
+    TextField,
+    List,
+    IconButton,
+    Tabs,
+    Tab,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Avatar,
+    InputAdornment
+} from '@mui/material';
+import {
+    Delete,
+    Edit,
+    Add,
+    Person,
+    CheckCircle,
+    Cancel,
+    Save,
+    ContentCopy
+} from '@mui/icons-material';
+import { useState } from 'react';
+import { Header } from '../components/Header';
+import TabQuestions from '../components/TabQuestions';
+import TabUserResponses from '../components/TabUserResponses';
+import { BotInfoCard } from '../components/BotInfoCard';
 
-interface Bot {
-  id: string;
-  name: string;
-  token: string;
-  status: 'online' | 'offline';
-}
+
 
 export default function BotPage() {
-  const { id } = useParams<{ id: string }>();
-  const [bot, setBot] = useState<Bot | null>(null);
-  const [loading, setLoading] = useState(true);
+    const [activeTab, setActiveTab] = useState(0);
+    const [editingQuestion, setEditingQuestion] = useState<string | null>(null);
+    const [newQuestionText, setNewQuestionText] = useState('');
+    const [newAnswers, setNewAnswers] = useState(['', '']);
 
-  useEffect(() => {
-    const fetchBot = async () => {
-      try {
-        const data = await getBotById(id!);
-        setBot(data);
-      } catch (error) {
-        console.error('Ошибка загрузки бота:', error);
-      } finally {
-        setLoading(false);
-      }
-    };
 
-    fetchBot();
-  }, [id]);
+    return (
+        <Box>
+            <Header title="Настройка"></Header>
+            <Box>
+                <Paper sx={{ p: 3, mb: 3 }}>
+                    <BotInfoCard bot={[]}></BotInfoCard>
+                </Paper>
 
-//   if (loading) {
-//     return (
-//       <Box display="flex" justifyContent="center" mt={4}>
-//         <CircularProgress />
-//       </Box>
-//     );
-//   }
+                <Tabs value={activeTab} onChange={(_, newValue) => setActiveTab(newValue)}>
+                    <Tab label="Вопросы" />
+                    <Tab label="Ответы пользователей" />
+                </Tabs>
 
-//   if (!bot) {
-//     return <Typography variant="h6">Бот не найден</Typography>;
-//   }
+                <Divider sx={{ mb: 3 }} />
 
-  return (
-    <Container maxWidth="md" sx={{ mt: 4 }}>
-      <Typography variant="h4" gutterBottom>
-        Алекс
-      </Typography>
-      
-      <Box sx={{ 
-        p: 3, 
-        bgcolor: 'background.paper', 
-        borderRadius: 2,
-        boxShadow: 1
-      }}>
-        {/* <Typography variant="body1">ID: {bot.id}</Typography>
-        <Typography variant="body1">Статус: {bot.status}</Typography> */}
-        {/* Другая информация о боте */}
-      </Box>
-    </Container>
-  );
-}
+                {activeTab === 0 && (
+                    <TabQuestions></TabQuestions>
+                )}
+
+                {activeTab === 1 && (
+                    <TabUserResponses></TabUserResponses>
+                )}
+            </Box>
+        </Box>
+    );
+};

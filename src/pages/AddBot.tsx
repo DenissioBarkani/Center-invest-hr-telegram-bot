@@ -1,54 +1,50 @@
-import { SideBar } from "../components/SideBar";
+import { Header } from "../components/Header";
 import {
-  Box,
-  Stack,
-  TextField,
-  Typography,
-  Button,
+    Box,
+    Stack,
+    TextField,
+    Button,
 } from "@mui/material";
 
 const AddBot: React.FC = () => {
-  return (
-    <Box>
-      <SideBar />
-      <Box component="main" ml={{ md: "240px" }} px={3} py={5}>
-       
-          <Stack spacing={3}>
-            <Typography variant="h4">Добавить Бота</Typography>
+    return (
+        <Box component="main" maxWidth={600}>
+            <Header title="Добавить Бота"></Header>
+            <Stack spacing={3}>
 
-            <TextField
-              required
-              label="Название бота"
 
-              fullWidth
-              variant="standard"
-            />
+                <TextField
+                    required
+                    label="Название бота"
 
-            <TextField
-              required
-              label="Токен от BotFather"
-             
-              fullWidth
-              variant="standard"
-            />
+                    fullWidth
+                    variant="standard"
+                />
 
-            <TextField
-              label="Описание"
- 
-              multiline
-              rows={3}
-              fullWidth
-              variant="standard"
-            />
+                <TextField
+                    required
+                    label="Токен от BotFather"
 
-            <Button variant="contained" color="primary">
-              Добавить
-            </Button>
-          </Stack>
-        
-      </Box>
-    </Box>
-  );
+                    fullWidth
+                    variant="standard"
+                />
+
+                <TextField
+                    label="Описание"
+
+                    multiline
+                    rows={3}
+                    fullWidth
+                    variant="standard"
+                />
+
+                <Button variant="contained" color="primary">
+                    Добавить
+                </Button>
+            </Stack>
+
+        </Box>
+    );
 };
 
 export default AddBot;
