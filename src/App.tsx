@@ -1,51 +1,74 @@
-// // import { useState } from 'react'
+import { Routes, Route, Navigate } from 'react-router-dom';
+import Home from './pages/Home.tsx';
+import LoginPage from './pages/LoginPage.tsx';
+import AddBot from './pages/AddBot.tsx';
+import BotPage from './pages/BotPage.tsx';
+import { Layout } from './Layout.tsx';
+import type { JSX } from 'react';
 
-// // import reactLogo from './assets/react.svg'
-// // import viteLogo from '/vite.svg'
-// // import './App.css'
-// import { Routes, Route } from "react-router-dom";
-// import Home from "./pages/Home.tsx";
-// import LoginPage from "./pages/LoginPage.tsx";
-// import AddBot from "./pages/AddBot.tsx";
-// import BotPage from "./pages/BotPage.tsx";
+// Компонент для защищённых маршрутов
+const PrivateRoute = ({ children }: { children: JSX.Element }) => {
+    const isAuthenticated = true; // Здесь ваша логика проверки авторизации
 
-// function App() {
-//     return (
-//         <>
-//             {/* <Header /> */}
-//             {/* <SideBar></SideBar> */}
-//             <Routes>
-//                 <Route path="/" element={<Home />} >
-//                   <Route path="/add-bot" element={<AddBot />} />
-//                   <Route path="/login" element={<LoginPage></LoginPage>}></Route>
-//                   <Route path="/bots/:id" element={<BotPage />} />
-//                 </Route>
-                
-//                 {/* <Route path="*" element={<NotFound></NotFound>}></Route> */}
-//             </Routes>
-//         </>
-//     );
-// }
+    // Если пользователь НЕ вошёл в систему
+    if (!isAuthenticated) {
+        return <Navigate to="/login" replace />;
+    }
 
-// export default App;
+    return children;
+};
 
+const GuestRoute = ({ children }: { children: JSX.Element }) => {
+    const isAuthenticated = true;
 
-import { Routes, Route } from "react-router-dom";
-import Home from "./pages/Home.tsx";
-import LoginPage from "./pages/LoginPage.tsx";
-import AddBot from "./pages/AddBot.tsx";
-import BotPage from "./pages/BotPage.tsx";
-import { Layout } from "./Layout.tsx";
+    // Если пользователь УЖЕ вошёл в систему
+    if (isAuthenticated) {
+        return <Navigate to="/" replace />;
+    }
+
+    return children;
+};
 
 function App() {
     return (
         <Routes>
             <Route element={<Layout />}>
-                <Route path="/" element={<Home />} />
-                <Route path="/add-bot" element={<AddBot />} />
-                <Route path="/bots/:id" element={<BotPage />} />
+                <Route
+                    path="/"
+                    element={
+                        <PrivateRoute>
+                            <Home />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/add-bot"
+                    element={
+                        <PrivateRoute>
+                            <AddBot />
+                        </PrivateRoute>
+                    }
+                />
+                <Route
+                    path="/bots/:id"
+                    element={
+                        <PrivateRoute>
+                            <BotPage />
+                        </PrivateRoute>
+                    }
+                />
             </Route>
-            <Route path="/login" element={<LoginPage />} />
+
+            <Route
+                path="/login"
+                element={
+                    <GuestRoute>
+                        <LoginPage />
+                    </GuestRoute>
+                }
+            />
+
+            <Route path="*" element={<Navigate to="/" replace />} />
         </Routes>
     );
 }
