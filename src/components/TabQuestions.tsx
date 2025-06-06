@@ -1,6 +1,5 @@
 import { Delete, Add } from '@mui/icons-material'
-import Edit from '@mui/icons-material/Edit';
-import { Box, Button, Chip, IconButton, List, Paper, TextField, Typography } from '@mui/material'
+import { Box, Button, Divider, IconButton, List, Paper, TextField, Typography } from '@mui/material'
 import { useState } from 'react'
 import { Question } from './Question';
 
@@ -22,7 +21,7 @@ const mockQuestions = [
 
 
 export default function TabQuestions() {
-    const [editingQuestion, setEditingQuestion] = useState<string | null>(null);
+    const [createQuestion, setCreateQuestion] = useState<boolean>(false);
     const [newQuestionText, setNewQuestionText] = useState('');
     const [newAnswers, setNewAnswers] = useState(['', '']);
 
@@ -57,10 +56,10 @@ export default function TabQuestions() {
                             fullWidth
                             value={answer}
                             onChange={(e) => handleAnswerChange(index, e.target.value)}
-                            sx={{ mr: 1 }}
+                            sx={{ mr: index > 1 ? 1 : "72px", }}
                         />
                         {index > 1 && (
-                            <IconButton onClick={() => setNewAnswers(newAnswers.filter((_, i) => i !== index))}>
+                            <IconButton sx={{ mr: 3 }} onClick={() => setNewAnswers(newAnswers.filter((_, i) => i !== index))}>
                                 <Delete color="error" />
                             </IconButton>
                         )}
@@ -78,16 +77,22 @@ export default function TabQuestions() {
                 <Button
                     variant="contained"
                     type="submit"
-                    sx={{ mt: 2 }}
+
+                    onClick={(e) => {
+                        e.preventDefault()
+                        setCreateQuestion(!createQuestion);
+                    }}
                 >
-                    {editingQuestion ? 'Сохранить изменения' : 'Добавить вопрос'}
+                    Создать вопрос
                 </Button>
             </Box>
+            <Divider sx={{ mb: 3, color: 'black'}} />
 
             {/* Список вопросов */}
+            <Typography gutterBottom variant="h5">Созданые вопросы:</Typography>
             <List>
-                {mockQuestions.map((question) => (
-                    <Question question={question}></Question>
+                {mockQuestions.map((question, i) => (
+                    <Question key={i} question={question}></Question>
                 ))}
             </List>
         </Paper>

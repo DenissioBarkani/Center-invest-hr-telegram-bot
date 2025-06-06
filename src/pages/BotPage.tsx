@@ -1,34 +1,13 @@
 import {
     Box,
-    Typography,
     Paper,
-    Chip,
-    Button,
+
     Divider,
-    TextField,
-    List,
-    IconButton,
+
     Tabs,
     Tab,
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Avatar,
-    InputAdornment
+
 } from '@mui/material';
-import {
-    Delete,
-    Edit,
-    Add,
-    Person,
-    CheckCircle,
-    Cancel,
-    Save,
-    ContentCopy
-} from '@mui/icons-material';
 import { useState } from 'react';
 import { Header } from '../components/Header';
 import TabQuestions from '../components/TabQuestions';
@@ -39,10 +18,6 @@ import { BotInfoCard } from '../components/BotInfoCard';
 
 export default function BotPage() {
     const [activeTab, setActiveTab] = useState(0);
-    const [editingQuestion, setEditingQuestion] = useState<string | null>(null);
-    const [newQuestionText, setNewQuestionText] = useState('');
-    const [newAnswers, setNewAnswers] = useState(['', '']);
-
 
     return (
         <Box>

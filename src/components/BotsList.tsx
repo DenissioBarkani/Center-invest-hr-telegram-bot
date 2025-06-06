@@ -112,17 +112,17 @@ export default function ReactVirtualizedTable() {
           label={row.isOnline === true ? 'Online' : 'Offline'}
           color={row.isOnline === true ? 'success' : 'error'}
           icon={row.isOnline === true ? <CheckCircle /> : <Cancel />}
-          sx={{ width: '100%', justifyContent: 'center' }}
+          sx={{ width: '100%', justifyContent: 'center', pointerEvents: 'none' }}
         />
       </TableCell>
       <TableCell align="center">
         {row.newMessagesCount > 0 ? (
           <Chip
-            label={row.newMessagesCount}
-            color="primary"
-            sx={{ width: '100%', justifyContent: 'center' }}
-            icon={<MessageRounded />}
-          />
+          label={row.newMessagesCount}
+          color="primary"
+          icon={<MessageRounded />}
+          sx={{ width: '100%', justifyContent: 'center', pointerEvents: 'none' }}
+        />
         ) : (
           <Typography variant="body2" color="text.secondary">Нет новых</Typography>
         )}

@@ -49,7 +49,7 @@ export const BotInfoCard: React.FC<Props> = () => {
     // };
     return (
         <>
-            <Box display="flex" justifyContent="space-between" alignItems="center">
+            <Box   display="flex" justifyContent="space-between" alignItems="center">
                 {isEditingBot ? (
                     <TextField
                         value={botData.name}
@@ -64,6 +64,8 @@ export const BotInfoCard: React.FC<Props> = () => {
                     label={botData.status === 1 ? 'Online' : 'Offline'}
                     color={botData.status === 1 ? 'success' : 'error'}
                     icon={botData.status === 1 ? <CheckCircle /> : <Cancel />}
+                    clickable={false}
+                    onClick={(e) => e.stopPropagation()} // Останавливаем всплытие
                 />
             </Box>
 

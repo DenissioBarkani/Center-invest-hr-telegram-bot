@@ -1,5 +1,5 @@
 import { Edit, Delete } from '@mui/icons-material'
-import { Paper, Box, Typography, IconButton, Chip } from '@mui/material'
+import { Paper, Box, Typography, IconButton } from '@mui/material'
 import React from 'react'
 
 
@@ -14,7 +14,7 @@ interface Props {
 }
 //  onClick={() => setEditingQuestion(question.id)}
 
-export const Question: React.FC<Props> = ({question}) => {
+export const Question: React.FC<Props> = ({ question }) => {
     return (
         <Paper sx={{ p: 2, mb: 2 }}>
             <Box display="flex" justifyContent="space-between">
@@ -29,10 +29,11 @@ export const Question: React.FC<Props> = ({question}) => {
                 </Box>
             </Box>
 
-            <Typography variant="subtitle2" sx={{ mt: 1 }}>Варианты ответов:</Typography>
-            <Box sx={{ display: 'flex', flexWrap: 'wrap', gap: 1, mt: 1 }}>
+            <Typography variant="subtitle1" sx={{ mt: 1 }}>Варианты ответов:</Typography>
+            <Box component={'ul'} sx={{ display: 'flex', flexDirection: 'column', flexWrap: 'wrap' }}>
                 {question.answers.map((answer, i) => (
-                    <Chip key={i} label={answer} variant="outlined" />
+                    // <Chip key={i} label={answer} variant="outlined" />
+                    <Typography key={i} component={'li'} variant="subtitle2" sx={{ mt: 0.5 }}>{i + 1}. {answer}</Typography>
                 ))}
             </Box>
         </Paper>
