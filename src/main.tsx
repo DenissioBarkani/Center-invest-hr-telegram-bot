@@ -11,11 +11,11 @@ const darkTheme = createTheme({
 });
 
 createRoot(document.getElementById('root')!).render(
-  <StrictMode>
+  // <StrictMode>
     <BrowserRouter>
       <ThemeProvider theme={darkTheme} defaultMode="dark">
         <App />
       </ThemeProvider>
     </BrowserRouter>
-  </StrictMode>,
+  // </StrictMode>,
 )
