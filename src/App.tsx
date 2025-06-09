@@ -22,9 +22,9 @@ const GuestRoute = ({ children }: { children: JSX.Element }) => {
     const isAuthenticated = true;
 
     // Если пользователь УЖЕ вошёл в систему
-    if (isAuthenticated) {
-        return <Navigate to="/" replace />;
-    }
+    // if (isAuthenticated) {
+    //     return <Navigate to="/" replace />;
+    // }
 
     return children;
 };
