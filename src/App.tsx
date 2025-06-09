@@ -5,10 +5,11 @@ import AddBot from './pages/AddBot.tsx';
 import BotPage from './pages/BotPage.tsx';
 import { Layout } from './Layout.tsx';
 import type { JSX } from 'react';
+import { useIsAuth } from './store/use-auth-store.tsx';
 
 // Компонент для защищённых маршрутов
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {
-    const isAuthenticated = true; // Здесь ваша логика проверки авторизации
+    const isAuthenticated = useIsAuth(); // Здесь ваша логика проверки авторизации
 
     // Если пользователь НЕ вошёл в систему
     if (!isAuthenticated) {
@@ -19,12 +20,12 @@ const PrivateRoute = ({ children }: { children: JSX.Element }) => {
 };
 
 const GuestRoute = ({ children }: { children: JSX.Element }) => {
-    const isAuthenticated = true;
+    const isAuthenticated = useIsAuth();
 
     // Если пользователь УЖЕ вошёл в систему
-    // if (isAuthenticated) {
-    //     return <Navigate to="/" replace />;
-    // }
+    if (isAuthenticated) {
+        return <Navigate to="/" replace />;
+    }
 
     return children;
 };

@@ -1,22 +1,15 @@
-import {
-    Box,
-    Button,
-    Container,
-    TextField,
-    Typography,
-    Avatar,
-    CssBaseline,
-} from "@mui/material";
-import { SmartToy } from "@mui/icons-material";
-import { useNavigate } from "react-router-dom";
-import { useForm } from "react-hook-form";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { z } from "zod";
+import { Box, Button, Container, TextField, Typography, Avatar, CssBaseline } from '@mui/material';
+import { SmartToy } from '@mui/icons-material';
+import { useNavigate } from 'react-router-dom';
+import { useForm } from 'react-hook-form';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { z } from 'zod';
+import { login } from '../store/use-auth-store';
 // import { useAuthStore } from "../store/authStore";
 
 const schema = z.object({
-    email: z.string().email("Введите корректный email"),
-    password: z.string().min(6, "Пароль минимум 6 символов"),
+    email: z.string().email('Введите корректный email'),
+    password: z.string().min(6, 'Пароль минимум 6 символов'),
 });
 
 type LoginFormData = z.infer<typeof schema>;
@@ -26,27 +19,26 @@ export default function LoginPage() {
     // const login = useAuthStore((state) => state.login);
     // const login = false
 
-
     const {
         register,
         handleSubmit,
         formState: { errors, isSubmitting },
     } = useForm<LoginFormData>({
         resolver: zodResolver(schema),
-        mode: "onTouched",
+        mode: 'onTouched',
     });
 
     const onSubmit = async (data: LoginFormData) => {
         try {
             // ⚠️ Здесь будет запрос к API — сейчас заглушка
-            console.log("Отправка данных:", data);
-            await new Promise((resolve) => setTimeout(resolve, 1000)); // Заглушка задержки
-
+            console.log('Отправка данных:', data);
+            // await new Promise((resolve) => setTimeout(resolve, 1000)); // Заглушка задержки
+            await login(data.email, data.password); // ⬅ здесь вызов твоего zustand login
             // Представим, что получили token с сервера
             // login("mock_token_value");
-            navigate("/");
+            navigate('/');
         } catch (err) {
-            console.error("Ошибка авторизации", err);
+            console.error('Ошибка авторизации', err);
         }
     };
 
@@ -56,12 +48,11 @@ export default function LoginPage() {
             <Box
                 sx={{
                     marginTop: 8,
-                    display: "flex",
-                    flexDirection: "column",
-                    alignItems: "center",
-                }}
-            >
-                <Avatar sx={{ m: 1, bgcolor: "info.main" }}>
+                    display: 'flex',
+                    flexDirection: 'column',
+                    alignItems: 'center',
+                }}>
+                <Avatar sx={{ m: 1, bgcolor: 'info.main' }}>
                     <SmartToy />
                 </Avatar>
 
@@ -75,7 +66,7 @@ export default function LoginPage() {
                         fullWidth
                         label="Email"
                         autoComplete="email"
-                        {...register("email")}
+                        {...register('email')}
                         error={!!errors.email}
                         helperText={errors.email?.message}
                     />
@@ -85,7 +76,7 @@ export default function LoginPage() {
                         fullWidth
                         label="Пароль"
                         type="password"
-                        {...register("password")}
+                        {...register('password')}
                         error={!!errors.password}
                         helperText={errors.password?.message}
                     />
@@ -95,9 +86,8 @@ export default function LoginPage() {
                         fullWidth
                         variant="contained"
                         sx={{ mt: 3, mb: 2 }}
-                        disabled={isSubmitting}
-                    >
-                        {isSubmitting ? "Вход..." : "Войти"}
+                        disabled={isSubmitting}>
+                        {isSubmitting ? 'Вход...' : 'Войти'}
                     </Button>
                 </Box>
             </Box>
