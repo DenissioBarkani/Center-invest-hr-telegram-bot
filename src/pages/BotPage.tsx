@@ -7,7 +7,7 @@ import {
     CircularProgress,
     Typography,
 } from "@mui/material";
-import React, { useState, useEffect } from "react";
+import { useState, useEffect } from "react";
 import { Header } from "../components/Header";
 import TabQuestions from "../components/TabQuestions";
 import TabUserResponses from "../components/TabUserResponses";
@@ -27,34 +27,39 @@ export default function BotPage() {
 
     useEffect(() => {
         if (!id) return;
+        const fetchData = async () => {
 
-        setLoading(true);
-        setError(null);
+            setLoading(true);
+            setError(null);
 
-        axios
-            .get(
-                `https://6842d197e1347494c31e0af7.mockapi.io/bots/${id}/botinfo`
-            )
-            .then((res) => {
-                if (res.status < 200 || res.status >= 300) {
-                    throw new Error(`HTTP error! status: ${res.status}`);
+            try {
+                const response = await axios.get(
+                    `https://6842d197e1347494c31e0af7.mockapi.io/bots/${id}/botinfo`
+                )
+                if (response.status < 200 || response.status >= 300) {
+                    throw new Error(`HTTP error! status: ${response.status}`);
                 }
-
-                // console.log(res.data)
-                setBotInfo(res.data[0]);
-            })
-            .catch((error) => {
-                if (error.response) {
-                    console.error("Server error:", error.response.status);
-                    setError(`Ошибка сервера: ${error.response.status}`);
+                setBotInfo(response.data[0]);
+            } catch (error) {
+                if (axios.isAxiosError(error)) {
+                    if (error.response) {
+                        console.error("Server error:", error.response.status);
+                        setError(`Ошибка сервера: ${error.response.status}`);
+                    } else if (error.request) {
+                        console.error("Network error:", error.message);
+                        setError("Ошибка сети: нет ответа от сервера");
+                    } else {
+                        console.error("Request error:", error.message);
+                        setError(`Ошибка запроса: ${error.message}`);
+                    }
                 } else {
-                    console.error("Request error:", error.message);
-                    setError(`Ошибка запроса: ${error.message}`);
+                    setError(`Произошла ошибка: ${error instanceof Error ? error.message : "Неизвестная ошибка"}`);
                 }
-            })
-            .finally(() => {
+            } finally {
                 setLoading(false);
-            });
+            }
+        }
+        fetchData();
     }, [id]);
 
     return (

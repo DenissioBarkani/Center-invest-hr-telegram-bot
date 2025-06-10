@@ -21,6 +21,7 @@ const AddBot: React.FC = () => {
         //     ...data,
         //     description: data.description?.trim() === '' ? null : data.description.trim(),
         // };
+        
 
         alert(JSON.stringify(data));
         reset();
