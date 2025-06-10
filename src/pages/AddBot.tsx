@@ -1,6 +1,8 @@
 import { useForm } from "react-hook-form";
 import { Header } from "../components/Header";
-import { Box, Stack, TextField, Button } from "@mui/material";
+import { Box, Stack, TextField, Button, Alert, Snackbar } from "@mui/material";
+import axios, { AxiosError } from "axios";
+import { useState } from "react";
 
 interface Bot {
     name: string;
@@ -16,15 +18,77 @@ const AddBot: React.FC = () => {
         reset,
     } = useForm<Bot>({ mode: "onBlur" });
 
-    const onSubmit = (data: Bot) => {
-        // const payload = {
-        //     ...data,
-        //     description: data.description?.trim() === '' ? null : data.description.trim(),
-        // };
-        
+    const [notification, setNotification] = useState<{
+        open: boolean;
+        message: string;
+        severity: 'success' | 'error';
+    }>({
+        open: false,
+        message: '',
+        severity: 'success'
+    });
 
-        alert(JSON.stringify(data));
-        reset();
+    const onSubmit = async (data: Bot) => {
+        try {
+            const payload = {
+                name: data.name.trim(),
+                id: Date.now().toString(),
+                isOnline: false,
+                newMessagesCount: 0,
+                createdAt: Date.now(),
+            };
+
+            await axios.post(
+                "https://6842d197e1347494c31e0af7.mockapi.io/bots",
+                payload,
+                {
+                    timeout: 5000,
+                    headers: {
+                        'Content-Type': 'application/json',
+                    }
+                }
+            );
+
+            setNotification({
+                open: true,
+                message: 'Бот успешно добавлен!',
+                severity: 'success'
+            });
+            reset();
+        } catch (error) {
+            let errorMessage = 'Произошла неизвестная ошибка';
+
+            if (axios.isAxiosError(error)) {
+                const axiosError = error as AxiosError;
+
+                if (axiosError.response) {
+                    // Сервер ответил с кодом ошибки
+                    errorMessage = `Ошибка сервера: ${axiosError.response.status}`;
+
+                    if (axiosError.response.data) {
+                        errorMessage += ` - ${JSON.stringify(axiosError.response.data)}`;
+                    }
+                } else if (axiosError.request) {
+                    // Запрос был сделан, но ответа не получено
+                    errorMessage = 'Сервер не отвечает. Проверьте подключение к интернету.';
+                } else {
+                    // Ошибка при настройке запроса
+                    errorMessage = `Ошибка при настройке запроса: ${axiosError.message}`;
+                }
+            } else if (error instanceof Error) {
+                errorMessage = error.message;
+            }
+
+            setNotification({
+                open: true,
+                message: errorMessage,
+                severity: 'error'
+            });
+        }
+    };
+
+    const handleCloseNotification = () => {
+        setNotification(prev => ({ ...prev, open: false }));
     };
 
     return (
@@ -34,7 +98,7 @@ const AddBot: React.FC = () => {
             noValidate
             maxWidth={600}
         >
-            <Header title="Добавить Бота"></Header>
+            <Header title="Добавить Бота" />
             <Stack spacing={3}>
                 <TextField
                     label="Название бота"
@@ -46,6 +110,7 @@ const AddBot: React.FC = () => {
                             value: 64,
                             message: "Максимум 64 символа",
                         },
+                        validate: value => value.trim().length > 0 || "Название не может быть пустым"
                     })}
                     error={!!errors.name}
                     helperText={errors.name?.message?.toString() || ""}
@@ -57,7 +122,8 @@ const AddBot: React.FC = () => {
                     fullWidth
                     variant="standard"
                     {...register("token", {
-                        required: "Токен обязательен",
+                        required: "Токен обязателен",
+                        validate: value => value.trim().length > 0 || "Токен не может быть пустым"
                     })}
                     error={!!errors.token}
                     helperText={errors.token?.message?.toString() || ""}
@@ -69,13 +135,38 @@ const AddBot: React.FC = () => {
                     rows={3}
                     fullWidth
                     variant="standard"
+                    {...register("description")}
                 />
 
-                <Button variant="contained" type="submit"
-                    disabled={!isValid} color="primary">
+                <Button
+                    variant="contained"
+                    type="submit"
+                    disabled={!isValid}
+                    color="primary"
+                    fullWidth
+                    size="large"
+                >
                     Добавить
                 </Button>
             </Stack>
+
+            <Snackbar
+                role="alert"
+                open={notification.open}
+                autoHideDuration={6000}
+                onClose={handleCloseNotification}
+                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}
+                
+            >
+                <Alert
+                    onClose={handleCloseNotification}
+                    severity={notification.severity}
+                    sx={{ width: '100%' }}
+                    variant="filled" 
+                >
+                    {notification.message}
+                </Alert>
+            </Snackbar>
         </Box>
     );
 };

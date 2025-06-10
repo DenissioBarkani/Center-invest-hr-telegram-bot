@@ -1,5 +1,5 @@
 import { Edit, Delete } from '@mui/icons-material'
-import { Paper, Box, Typography, IconButton } from '@mui/material'
+import { Paper, Box, Typography, IconButton, List } from '@mui/material'
 import React from 'react'
 
 
@@ -30,12 +30,12 @@ export const Question: React.FC<Props> = ({ question }) => {
             </Box>
 
             <Typography variant="subtitle1" sx={{ mt: 1 }}>Варианты ответов:</Typography>
-            <Box component={'ul'} sx={{ display: 'flex', flexDirection: 'column', flexWrap: 'wrap' }}>
+            <List  component={'ul'} sx={{ display: 'flex', flexDirection: 'column', flexWrap: 'wrap' }}>
                 {question.answers.map((answer, i) => (
                     // <Chip key={i} label={answer} variant="outlined" />
                     <Typography key={i} component={'li'} variant="subtitle2" sx={{ mt: 0.5 }}>{i + 1}. {answer}</Typography>
                 ))}
-            </Box>
+            </List>
         </Paper>
     )
 }

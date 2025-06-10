@@ -12,7 +12,7 @@ import { Header } from "../components/Header";
 import TabQuestions from "../components/TabQuestions";
 import TabUserResponses from "../components/TabUserResponses";
 import { BotInfoCard, type BotProps } from "../components/BotInfoCard";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import axios from "axios";
 
 
@@ -24,6 +24,22 @@ export default function BotPage() {
     const [error, setError] = useState<string | null>(null);
 
     const { id } = useParams<{ id: string }>();
+    const [searchParams, setSearchParams] = useSearchParams();
+
+    // Определяем активную вкладку из URL при монтировании
+    useEffect(() => {
+        const tabFromUrl = searchParams.get('tab');
+        if (tabFromUrl === 'responses') {
+            setActiveTab(1);
+        } else {
+            setActiveTab(0);
+        }
+    }, [searchParams]);
+
+    const handleTabChange = (_: React.SyntheticEvent, newValue: number) => {
+        setActiveTab(newValue);
+        setSearchParams(newValue === 1 ? { tab: 'responses' } : { tab: 'questions' });
+    };
 
     useEffect(() => {
         if (!id) return;
@@ -31,7 +47,7 @@ export default function BotPage() {
 
             setLoading(true);
             setError(null);
-
+    
             try {
                 const response = await axios.get(
                     `https://6842d197e1347494c31e0af7.mockapi.io/bots/${id}/botinfo`
@@ -82,7 +98,7 @@ export default function BotPage() {
 
                 <Tabs
                     value={activeTab}
-                    onChange={(_, newValue) => setActiveTab(newValue)}
+                    onChange={handleTabChange}
                 >
                     <Tab label="Вопросы" />
                     <Tab label="Ответы пользователей" />
