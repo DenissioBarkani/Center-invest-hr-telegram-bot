@@ -44,6 +44,7 @@ export const BotInfoCard: React.FC<BotInfoCardProps> = ({ bot }) => {
             <Box display="flex" justifyContent="space-between" alignItems="center">
                 <Typography variant="h4">{bot.name}</Typography>
                 <Chip
+                    sx={{ pointerEvents: 'none' }}
                     label={bot.isActive ? 'Online' : 'Offline'}
                     color={bot.isActive ? 'success' : 'error'}
                     icon={bot.isActive ? <CheckCircle /> : <Cancel />}
@@ -57,8 +58,8 @@ export const BotInfoCard: React.FC<BotInfoCardProps> = ({ bot }) => {
 
             <Typography variant="body1" sx={{ mt: 2 }}><strong>Описание:</strong></Typography>
             <Typography sx={{ fontFamily: 'monospace' }}>{bot.description}</Typography>
-            
-            <Box sx={{ mt: 3, display: 'flex', justifyContent:"space-between", gap: 2 }}>
+
+            <Box sx={{ mt: 3, display: 'flex', justifyContent: "space-between", gap: 2 }}>
                 <Button variant="contained" startIcon={<Edit />} onClick={handleEdit}>
                     Редактировать
                 </Button>

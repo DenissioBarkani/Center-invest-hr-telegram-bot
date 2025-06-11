@@ -19,6 +19,8 @@ export const Question: React.FC<Props> = ({ question }) => {
         <Paper sx={{ p: 2, mb: 2 }}>
             <Box display="flex" justifyContent="space-between">
                 <Typography variant="h6">Текст вопроса: {question.text}</Typography>
+
+
                 <Box>
                     <IconButton>
                         <Edit color="primary" />
@@ -32,7 +34,6 @@ export const Question: React.FC<Props> = ({ question }) => {
             <Typography variant="subtitle1" sx={{ mt: 1 }}>Варианты ответов:</Typography>
             <List  component={'ul'} sx={{ display: 'flex', flexDirection: 'column', flexWrap: 'wrap' }}>
                 {question.answers.map((answer, i) => (
-                    // <Chip key={i} label={answer} variant="outlined" />
                     <Typography key={i} component={'li'} variant="subtitle2" sx={{ mt: 0.5 }}>{i + 1}. {answer}</Typography>
                 ))}
             </List>

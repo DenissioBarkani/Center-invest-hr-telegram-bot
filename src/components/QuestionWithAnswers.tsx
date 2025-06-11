@@ -33,7 +33,16 @@ export default function QuestionWithAnswers({ usersResponse }: QuestionWithAnswe
                             <Typography variant="body2" component="span" color="text.secondary">
                                 {usersResponse.countResponse}
                             </Typography>
+
+                            {true && <>
+                                <CommentOutlined sx={{ ml: 1 }} fontSize="small" color="info" />
+                                <Typography variant="body2" component="span" color="info">
+                                    0
+                                </Typography>
+                            </>}
+
                         </Box>
+
                     }
                 />
             </ListItem>

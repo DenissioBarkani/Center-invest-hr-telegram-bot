@@ -17,6 +17,7 @@ import {
   DialogContentText,
   DialogActions,
   Skeleton,
+  Box,
 } from '@mui/material';
 import { TableVirtuoso } from 'react-virtuoso';
 import type { TableComponents } from 'react-virtuoso';
@@ -103,8 +104,10 @@ export default function ReactVirtualizedTable() {
       .catch((error) => {
         if (error.response) {
           console.error('Server error:', error.response.status);
+          return setBots([]);
         } else {
           console.error('Request error:', error.message);
+          return setBots([]);
         }
       })
       .finally(() => {
@@ -208,15 +211,28 @@ export default function ReactVirtualizedTable() {
 
   return (
     <Paper style={{ height: 500, width: '100%' }}>
-      <TableVirtuoso
-        data={isLoading ? skeletonRows : bots}
-        components={VirtuosoTableComponents}
-        fixedHeaderContent={fixedHeaderContent}
-        itemContent={(index, row) =>
-          isLoading ? <SkeletonRow /> : rowContent(index, row)
-        }
-      />
+      {!isLoading && bots.length === 0 ? (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="100%"
+        >
+          <Typography variant="h6" color="error">
+            Ошибка загрузки
+          </Typography>
+        </Box>
+      ) : (
+        <TableVirtuoso
+          data={isLoading ? skeletonRows : bots}
+          components={VirtuosoTableComponents}
+          fixedHeaderContent={fixedHeaderContent}
+          itemContent={(index, row) =>
+            isLoading ? <SkeletonRow /> : rowContent(index, row)
+          }
+        />
 
+      )}
 
       <Dialog open={!!botToDelete} onClose={() => setBotToDelete(null)}>
         <DialogTitle>Удалить бота?</DialogTitle>

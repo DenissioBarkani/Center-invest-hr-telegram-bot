@@ -3,6 +3,7 @@ import { Box, Button, CircularProgress, Divider, IconButton, List, Paper, TextFi
 import { useEffect, useState } from 'react';
 import { Question } from './Question';
 import { useForm, useFieldArray } from 'react-hook-form';
+import axios from 'axios';
 
 interface QuestionType {
     id: number;
@@ -53,13 +54,37 @@ export default function TabQuestions() {
     });
 
     const fetchData = async () => {
-
+        setIsLoading(true);
+        try {
+            const response = await axios.get(
+                `https://6842d197e1347494c31e0af7.mockapi.io/bots/botinfo`
+            )
+            console.log(response)
+            // if (response.status < 200 || response.status >= 300) {
+            //     throw new Error(`HTTP error! status: ${response.status}`);
+            // }
+            // setBotInfo(response.data[0]);
+        } catch (error) {
+            if (axios.isAxiosError(error)) {
+                if (error.response) {
+                    console.error("Server error:", error.response.status)
+                } else if (error.request) {
+                    console.error("Network error:", error.message)
+                } else {
+                    console.error("Request error:", error.message)
+                }
+            } else {
+                console.error(`Произошла ошибка: ${error instanceof Error ? error.message : "Неизвестная ошибка"}`);
+            }
+        } finally {
+            setIsLoading(false);
+        }
+       
     }
 
-    useEffect(()=> {
-        // setIsLoading(true)
-        
-    })
+    useEffect(() => {
+        // fetchData();
+    }, [])
 
     const onSubmit = (data: FormValues) => {
         if (data.answers.some((a) => !a.value.trim())) {
