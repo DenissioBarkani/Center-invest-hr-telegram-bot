@@ -1,3 +1,13 @@
+Как запустить у себя?
+1. git clone https://github.com/Center-invest-IT/hr-telegram-bot-admin.
+
+Заити в скаченую папку
+2. npm i
+3. npm run dev
+
+
+
+Какаята белеберда
 # React + TypeScript + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
