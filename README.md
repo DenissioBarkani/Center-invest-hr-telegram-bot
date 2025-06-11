@@ -1,12 +1,35 @@
-Как запустить у себя?
-1. git clone https://github.com/Center-invest-IT/hr-telegram-bot-admin.
+## 🚀 Как запустить у себя?
 
-Заити в скаченую папку
-2. npm i
-3. npm run dev
+1. Клонируйте репозиторий:
 
+```bash
+git clone https://github.com/Center-invest-IT/hr-telegram-bot-admin
+```
 
+2. Перейдите в папку проекта:
+3. Установите зависимости:
 
+```bash
+npm install
+```
+
+4. Запустите проект:
+
+```bash
+npm run dev
+```
+
+## 🔑 Авторизация
+
+Для входа используйте **любой email и пароль**, главное — пройти валидацию.
+
+**Пример:**
+```
+Email: 23fsdf@gmail.com
+Пароль: 3432424
+```
+
+---
 Какаята белеберда
 # React + TypeScript + Vite
 
