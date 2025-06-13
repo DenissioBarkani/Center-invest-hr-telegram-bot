@@ -23,5 +23,5 @@ export const apiErrorHandle = (error: unknown, context: string): Error => {
     }
 
     console.error(`[API Error] ${errorMessage}`, error);
-    return new Error(errorMessage);
+    throw new Error(errorMessage);
 };
