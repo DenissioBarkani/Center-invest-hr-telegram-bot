@@ -1,5 +1,4 @@
 import * as React from 'react';
-import axios, { AxiosError } from 'axios';
 import {
     Table,
     TableBody,
@@ -97,53 +96,12 @@ export default function ReactVirtualizedTable() {
     };
 
     const fetchBots = async () => {
-        // setIsLoading(true);
-        // axios
-        //   .get(
-        //     `https://6842d197e1347494c31e0af7.mockapi.io/bots`,
-        //   )
-        //   .then((res) => {
-        //     if (res.status < 200 || res.status >= 300) {
-        //       throw new Error(`HTTP error! status: ${res.status}`);
-        //     }
-        //     return setBots(res.data);
-        //   })
-        //   .catch((error) => {
-        //     if (error.response) {
-        //       console.error('Server error:', error.response.status);
-        //       return setBots([]);
-        //     } else {
-        //       console.error('Request error:', error.message);
-        //       return setBots([]);
-        //     }
-        //   })
-        //   .finally(() => {
-        //     setIsLoading(false); // скрываем скелетоны
-        //   });
         setIsLoading(true);
         try {
             const data = await getBots();
             setBots(data);
         } catch (error) {
-          
-            if (axios.isAxiosError(error)) {
-                const axiosError = error as AxiosError;
-
-                if (axiosError.response) {
-                    // Сервер ответил с кодом ошибки
-                     console.error(`Ошибка сервера: ${axiosError.response.status}`);
-                } else if (axiosError.request) {
-                    // Запрос был сделан, но ответа не получено
-                    console.error('Сервер не отвечает. Проверьте подключение к интернету.');
-                } else {
-                    // Ошибка при настройке запроса
-                    console.error(`Ошибка при настройке запроса: ${axiosError.message}`);
-                }
-            } else if (error instanceof Error) {
-                console.error(error.message)
-               
-            }
-
+            console.error(error instanceof Error ? error.message : 'Неизвестная ошибка');
             return setBots([]);
         } finally {
             setIsLoading(false);
