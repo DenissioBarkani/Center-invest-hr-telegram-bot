@@ -1,37 +1,38 @@
 import * as React from 'react';
-import axios from 'axios';
+import axios, { AxiosError } from 'axios';
 import {
-  Table,
-  TableBody,
-  TableCell,
-  TableContainer,
-  TableHead,
-  TableRow,
-  Paper,
-  Chip,
-  Typography,
-  Button,
-  Dialog,
-  DialogTitle,
-  DialogContent,
-  DialogContentText,
-  DialogActions,
-  Skeleton,
-  Box,
+    Table,
+    TableBody,
+    TableCell,
+    TableContainer,
+    TableHead,
+    TableRow,
+    Paper,
+    Chip,
+    Typography,
+    Button,
+    Dialog,
+    DialogTitle,
+    DialogContent,
+    DialogContentText,
+    DialogActions,
+    Skeleton,
+    Box,
 } from '@mui/material';
 import { TableVirtuoso } from 'react-virtuoso';
 import type { TableComponents } from 'react-virtuoso';
 import { useNavigate } from 'react-router-dom';
 import { Cancel, CheckCircle, MessageRounded } from '@mui/icons-material';
+import { getBots } from '../api/apiBot';
 
 interface Data {
-  id: string; // БЫЛО: number
-  name: string;
-  isOnline: boolean;
-  newMessagesCount: number;
+    id: string; // БЫЛО: number
+    name: string;
+    isOnline: boolean;
+    newMessagesCount: number;
 }
 
-// 
+//
 // {
 //   "id": "15",
 //   "name": "Hill",
@@ -57,199 +58,235 @@ interface Data {
 //   { id: 15, name: 'Hill', isOnline: true, phone: '555-666-7777', newMessagesCount: 50 }
 // ];
 
-
-
 function fixedHeaderContent() {
-  return (
-    <TableRow>
-      <TableCell align="left" style={{ width: 20 }}>ID</TableCell>
-      <TableCell align="left" style={{ width: 100 }}>Бот</TableCell>
-      <TableCell align="center" style={{ width: 50 }}>Статус</TableCell>
-      <TableCell align="center" style={{ width: 110 }}>Новых сообщений</TableCell>
-      <TableCell align="center" style={{ width: 90 }}>Действия</TableCell>
-    </TableRow>
-  );
+    return (
+        <TableRow>
+            <TableCell align="left" style={{ width: 20 }}>
+                ID
+            </TableCell>
+            <TableCell align="left" style={{ width: 100 }}>
+                Бот
+            </TableCell>
+            <TableCell align="center" style={{ width: 50 }}>
+                Статус
+            </TableCell>
+            <TableCell align="center" style={{ width: 110 }}>
+                Новых сообщений
+            </TableCell>
+            <TableCell align="center" style={{ width: 90 }}>
+                Действия
+            </TableCell>
+        </TableRow>
+    );
 }
 
 export default function ReactVirtualizedTable() {
-  const [bots, setBots] = React.useState<Data[]>([]);
-  const [isLoading, setIsLoading] = React.useState<boolean>(true)
+    const [bots, setBots] = React.useState<Data[]>([]);
+    const [isLoading, setIsLoading] = React.useState<boolean>(true);
 
-  const [botToDelete, setBotToDelete] = React.useState<Data | null>(null);
+    const [botToDelete, setBotToDelete] = React.useState<Data | null>(null);
 
-  const navigate = useNavigate();
-  const handleBotClick = (id: string) => {
-    navigate(`/bots/${id}`);
-  };
+    const navigate = useNavigate();
+    const handleBotClick = (id: string) => {
+        navigate(`/bots/${id}`);
+    };
 
+    const handleDelete = (id: string) => {
+        setBots((prev) => prev.filter((bot) => bot.id !== id));
+        setBotToDelete(null);
+    };
 
-  const handleDelete = (id: string) => {
-    setBots((prev) => prev.filter((bot) => bot.id !== id));
-    setBotToDelete(null);
-  };
+    const fetchBots = async () => {
+        // setIsLoading(true);
+        // axios
+        //   .get(
+        //     `https://6842d197e1347494c31e0af7.mockapi.io/bots`,
+        //   )
+        //   .then((res) => {
+        //     if (res.status < 200 || res.status >= 300) {
+        //       throw new Error(`HTTP error! status: ${res.status}`);
+        //     }
+        //     return setBots(res.data);
+        //   })
+        //   .catch((error) => {
+        //     if (error.response) {
+        //       console.error('Server error:', error.response.status);
+        //       return setBots([]);
+        //     } else {
+        //       console.error('Request error:', error.message);
+        //       return setBots([]);
+        //     }
+        //   })
+        //   .finally(() => {
+        //     setIsLoading(false); // скрываем скелетоны
+        //   });
+        setIsLoading(true);
+        try {
+            const data = await getBots();
+            setBots(data);
+        } catch (error) {
+          
+            if (axios.isAxiosError(error)) {
+                const axiosError = error as AxiosError;
 
+                if (axiosError.response) {
+                    // Сервер ответил с кодом ошибки
+                     console.error(`Ошибка сервера: ${axiosError.response.status}`);
+                } else if (axiosError.request) {
+                    // Запрос был сделан, но ответа не получено
+                    console.error('Сервер не отвечает. Проверьте подключение к интернету.');
+                } else {
+                    // Ошибка при настройке запроса
+                    console.error(`Ошибка при настройке запроса: ${axiosError.message}`);
+                }
+            } else if (error instanceof Error) {
+                console.error(error.message)
+               
+            }
 
-  const fetchBots = () => {
-    setIsLoading(true)
-    axios
-      .get(
-        `https://6842d197e1347494c31e0af7.mockapi.io/bots`,
-      )
-      .then((res) => {
-        if (res.status < 200 || res.status >= 300) {
-          throw new Error(`HTTP error! status: ${res.status}`);
+            return setBots([]);
+        } finally {
+            setIsLoading(false);
         }
-        return setBots(res.data);
-      })
-      .catch((error) => {
-        if (error.response) {
-          console.error('Server error:', error.response.status);
-          return setBots([]);
-        } else {
-          console.error('Request error:', error.message);
-          return setBots([]);
-        }
-      })
-      .finally(() => {
-        setIsLoading(false); // скрываем скелетоны
-      });
-  };
+    };
 
+    React.useEffect(() => {
+        fetchBots();
+    }, []);
 
-  React.useEffect(() => {
-    fetchBots()
-  }, [])
+    const CustomTableRow: TableComponents<Data>['TableRow'] = ({ item, ...props }) => {
+        return (
+            <TableRow
+                {...props}
+                hover
+                sx={{ cursor: 'pointer' }}
+                onClick={() => handleBotClick(item.id)}
+            />
+        );
+    };
 
-  const CustomTableRow: TableComponents<Data>["TableRow"] = ({ item, ...props }) => {
-    return (
-      <TableRow
-        {...props}
-        hover
-        sx={{ cursor: 'pointer' }}
-        onClick={() => handleBotClick(item.id)}
-      />
+    const VirtuosoTableComponents: TableComponents<Data> = {
+        Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
+            <TableContainer component={Paper} {...props} ref={ref} />
+        )),
+        Table: (props) => (
+            <Table {...props} sx={{ borderCollapse: 'separate', tableLayout: 'fixed' }} />
+        ),
+        TableHead: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
+            <TableHead sx={{ background: 'white' }} {...props} ref={ref} />
+        )),
+        TableRow: CustomTableRow,
+        TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
+            <TableBody {...props} ref={ref} />
+        )),
+    };
+
+    const rowContent = (_index: number, row: Data) => (
+        <>
+            <TableCell align="left">{row.id}</TableCell>
+            <TableCell align="left">{row.name}</TableCell>
+            <TableCell align="center">
+                <Chip
+                    label={row.isOnline === true ? 'Online' : 'Offline'}
+                    color={row.isOnline === true ? 'success' : 'error'}
+                    icon={row.isOnline === true ? <CheckCircle /> : <Cancel />}
+                    sx={{ width: '100%', justifyContent: 'center', pointerEvents: 'none' }}
+                />
+            </TableCell>
+            <TableCell align="center">
+                {row.newMessagesCount > 0 ? (
+                    <Chip
+                        label={row.newMessagesCount}
+                        color="primary"
+                        icon={<MessageRounded />}
+                        sx={{ width: '100%', justifyContent: 'center', pointerEvents: 'none' }}
+                    />
+                ) : (
+                    <Typography variant="body2" color="text.secondary">
+                        Нет новых
+                    </Typography>
+                )}
+            </TableCell>
+            <TableCell align="center">
+                <Button
+                    color="error"
+                    variant="contained"
+                    sx={{ width: '100%', justifyContent: 'center' }}
+                    onClick={(e) => {
+                        e.stopPropagation();
+                        setBotToDelete(row);
+                    }}>
+                    Удалить
+                </Button>
+            </TableCell>
+        </>
     );
-  };
 
-  const VirtuosoTableComponents: TableComponents<Data> = {
-    Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
-      <TableContainer component={Paper} {...props} ref={ref} />
-    )),
-    Table: (props) => (
-      <Table {...props} sx={{ borderCollapse: 'separate', tableLayout: 'fixed' }} />
-    ),
-    TableHead: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
-      <TableHead sx={{ background: 'white' }} {...props} ref={ref} />
-    )),
-    TableRow: CustomTableRow,
-    TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
-      <TableBody {...props} ref={ref} />
-    )),
-  };
+    const skeletonRows = Array.from({ length: 10 }).map((_, index) => ({
+        id: String(index),
+        name: '',
+        isOnline: false,
+        phone: '',
+        newMessagesCount: 0,
+    }));
 
-  const rowContent = (_index: number, row: Data) => (
-    <>
-      <TableCell align="left">{row.id}</TableCell>
-      <TableCell align="left">{row.name}</TableCell>
-      <TableCell align="center">
-        <Chip
-          label={row.isOnline === true ? 'Online' : 'Offline'}
-          color={row.isOnline === true ? 'success' : 'error'}
-          icon={row.isOnline === true ? <CheckCircle /> : <Cancel />}
-          sx={{ width: '100%', justifyContent: 'center', pointerEvents: 'none' }}
-        />
-      </TableCell>
-      <TableCell align="center">
-        {row.newMessagesCount > 0 ? (
-          <Chip
-            label={row.newMessagesCount}
-            color="primary"
-            icon={<MessageRounded />}
-            sx={{ width: '100%', justifyContent: 'center', pointerEvents: 'none' }}
-          />
-        ) : (
-          <Typography variant="body2" color="text.secondary">Нет новых</Typography>
-        )}
-      </TableCell>
-      <TableCell align="center">
-        <Button
-          color="error"
-          variant="contained"
-          sx={{ width: '100%', justifyContent: 'center' }}
-          onClick={(e) => {
-            e.stopPropagation();
-            setBotToDelete(row);
-          }}
-        >
-          Удалить
-        </Button>
-      </TableCell>
+    const SkeletonRow = () => (
+        <>
+            <TableCell>
+                <Skeleton variant="text" height={30} />
+            </TableCell>
+            <TableCell>
+                <Skeleton variant="text" height={30} width="80%" />
+            </TableCell>
+            <TableCell>
+                <Skeleton variant="rectangular" width="100%" height={30} />
+            </TableCell>
+            <TableCell>
+                <Skeleton variant="rectangular" width="100%" height={30} />
+            </TableCell>
+            <TableCell>
+                <Skeleton variant="rectangular" width="100%" height={30} />
+            </TableCell>
+        </>
+    );
 
+    return (
+        <Paper style={{ height: 500, width: '100%' }}>
+            {!isLoading && bots.length === 0 ? (
+                <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+                    <Typography variant="h6" color="error">
+                        Ошибка загрузки
+                    </Typography>
+                </Box>
+            ) : (
+                <TableVirtuoso
+                    data={isLoading ? skeletonRows : bots}
+                    components={VirtuosoTableComponents}
+                    fixedHeaderContent={fixedHeaderContent}
+                    itemContent={(index, row) =>
+                        isLoading ? <SkeletonRow /> : rowContent(index, row)
+                    }
+                />
+            )}
 
-    </>
-  );
-
-  const skeletonRows = Array.from({ length: 10 }).map((_, index) => ({
-    id: String(index),
-    name: '',
-    isOnline: false,
-    phone: '',
-    newMessagesCount: 0,
-  }));
-
-
-  const SkeletonRow = () => (
-    <>
-      <TableCell><Skeleton variant="text" height={30} /></TableCell>
-      <TableCell><Skeleton variant="text" height={30} width="80%" /></TableCell>
-      <TableCell><Skeleton variant="rectangular" width="100%" height={30} /></TableCell>
-      <TableCell><Skeleton variant="rectangular" width="100%" height={30} /></TableCell>
-      <TableCell><Skeleton variant="rectangular" width="100%" height={30} /></TableCell>
-    </>
-  );
-
-
-  return (
-    <Paper style={{ height: 500, width: '100%' }}>
-      {!isLoading && bots.length === 0 ? (
-        <Box
-          display="flex"
-          justifyContent="center"
-          alignItems="center"
-          height="100%"
-        >
-          <Typography variant="h6" color="error">
-            Ошибка загрузки
-          </Typography>
-        </Box>
-      ) : (
-        <TableVirtuoso
-          data={isLoading ? skeletonRows : bots}
-          components={VirtuosoTableComponents}
-          fixedHeaderContent={fixedHeaderContent}
-          itemContent={(index, row) =>
-            isLoading ? <SkeletonRow /> : rowContent(index, row)
-          }
-        />
-
-      )}
-
-      <Dialog open={!!botToDelete} onClose={() => setBotToDelete(null)}>
-        <DialogTitle>Удалить бота?</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Вы уверены, что хотите удалить бота <strong>{botToDelete?.name}</strong>?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button onClick={() => setBotToDelete(null)} color="primary">
-            Отмена
-          </Button>
-          <Button onClick={() => botToDelete && handleDelete(botToDelete.id)} color="error">
-            Удалить
-          </Button>
-        </DialogActions>
-      </Dialog>
-    </Paper>
-  );
+            <Dialog open={!!botToDelete} onClose={() => setBotToDelete(null)}>
+                <DialogTitle>Удалить бота?</DialogTitle>
+                <DialogContent>
+                    <DialogContentText>
+                        Вы уверены, что хотите удалить бота <strong>{botToDelete?.name}</strong>?
+                    </DialogContentText>
+                </DialogContent>
+                <DialogActions>
+                    <Button onClick={() => setBotToDelete(null)} color="primary">
+                        Отмена
+                    </Button>
+                    <Button
+                        onClick={() => botToDelete && handleDelete(botToDelete.id)}
+                        color="error">
+                        Удалить
+                    </Button>
+                </DialogActions>
+            </Dialog>
+        </Paper>
+    );
 }
