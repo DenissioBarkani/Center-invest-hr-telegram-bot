@@ -61,6 +61,7 @@ const AddBot: React.FC = () => {
             <Header title="Добавить Бота" />
             <Stack spacing={3}>
                 <TextField
+                    required
                     label="Название бота"
                     fullWidth
                     variant="standard"
