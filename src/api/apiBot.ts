@@ -1,13 +1,9 @@
-import { apiErrorHandle } from './apiErrorHandler';
+// import { apiErrorHandle } from './apiErrorHandler';
 import { apiBots } from './config';
 
 export const getBots = async () => {
-    try {
-        const response = await apiBots.get('/bo2s');
+        const response = await apiBots.get('/bo3ts');
         return response.data;
-    } catch (error) {
-        apiErrorHandle(error, 'при получении ботов');
-    }
 };
 
 export const getBotInfo = async (botId: number) => {

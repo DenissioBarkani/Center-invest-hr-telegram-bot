@@ -5,7 +5,7 @@ import AddBot from './pages/AddBot.tsx';
 import BotPage from './pages/BotPage.tsx';
 import { Layout } from './Layout.tsx';
 import type { JSX } from 'react';
-import { useIsAuth } from './store/use-auth-store.tsx';
+import { useIsAuth } from './store/use-auth-store.ts';
 
 // Компонент для защищённых маршрутов
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {

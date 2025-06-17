@@ -1,4 +1,4 @@
-import * as React from 'react';
+import * as React from "react";
 import {
     Table,
     TableBody,
@@ -17,12 +17,14 @@ import {
     DialogActions,
     Skeleton,
     Box,
-} from '@mui/material';
-import { TableVirtuoso } from 'react-virtuoso';
-import type { TableComponents } from 'react-virtuoso';
-import { useNavigate } from 'react-router-dom';
-import { Cancel, CheckCircle, MessageRounded } from '@mui/icons-material';
-import { getBots } from '../api/apiBot';
+} from "@mui/material";
+import { TableVirtuoso } from "react-virtuoso";
+import type { TableComponents } from "react-virtuoso";
+import { useNavigate } from "react-router-dom";
+import { Cancel, CheckCircle, MessageRounded } from "@mui/icons-material";
+import { getBots } from "../api/apiBot";
+import { type ApiError } from "../api/errorHandler";
+import { addNotification } from "../store/use-notification-store";
 
 interface Data {
     id: string; // БЫЛО: number
@@ -95,14 +97,18 @@ export default function ReactVirtualizedTable() {
         setBotToDelete(null);
     };
 
+    
+
     const fetchBots = async () => {
         setIsLoading(true);
         try {
             const data = await getBots();
             setBots(data);
-        } catch (error) {
-            console.error(error instanceof Error ? error.message : 'Неизвестная ошибка');
-            return setBots([]);
+        } catch (error: unknown) {
+
+            const apiError = error as ApiError;
+            addNotification(apiError.message, "error", 6000);
+            setBots([]);
         } finally {
             setIsLoading(false);
         }
@@ -112,12 +118,15 @@ export default function ReactVirtualizedTable() {
         fetchBots();
     }, []);
 
-    const CustomTableRow: TableComponents<Data>['TableRow'] = ({ item, ...props }) => {
+    const CustomTableRow: TableComponents<Data>["TableRow"] = ({
+        item,
+        ...props
+    }) => {
         return (
             <TableRow
                 {...props}
                 hover
-                sx={{ cursor: 'pointer' }}
+                sx={{ cursor: "pointer" }}
                 onClick={() => handleBotClick(item.id)}
             />
         );
@@ -128,10 +137,13 @@ export default function ReactVirtualizedTable() {
             <TableContainer component={Paper} {...props} ref={ref} />
         )),
         Table: (props) => (
-            <Table {...props} sx={{ borderCollapse: 'separate', tableLayout: 'fixed' }} />
+            <Table
+                {...props}
+                sx={{ borderCollapse: "separate", tableLayout: "fixed" }}
+            />
         ),
         TableHead: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
-            <TableHead sx={{ background: 'white' }} {...props} ref={ref} />
+            <TableHead sx={{ background: "white" }} {...props} ref={ref} />
         )),
         TableRow: CustomTableRow,
         TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
@@ -145,10 +157,14 @@ export default function ReactVirtualizedTable() {
             <TableCell align="left">{row.name}</TableCell>
             <TableCell align="center">
                 <Chip
-                    label={row.isOnline === true ? 'Online' : 'Offline'}
-                    color={row.isOnline === true ? 'success' : 'error'}
+                    label={row.isOnline === true ? "Online" : "Offline"}
+                    color={row.isOnline === true ? "success" : "error"}
                     icon={row.isOnline === true ? <CheckCircle /> : <Cancel />}
-                    sx={{ width: '100%', justifyContent: 'center', pointerEvents: 'none' }}
+                    sx={{
+                        width: "100%",
+                        justifyContent: "center",
+                        pointerEvents: "none",
+                    }}
                 />
             </TableCell>
             <TableCell align="center">
@@ -157,7 +173,11 @@ export default function ReactVirtualizedTable() {
                         label={row.newMessagesCount}
                         color="primary"
                         icon={<MessageRounded />}
-                        sx={{ width: '100%', justifyContent: 'center', pointerEvents: 'none' }}
+                        sx={{
+                            width: "100%",
+                            justifyContent: "center",
+                            pointerEvents: "none",
+                        }}
                     />
                 ) : (
                     <Typography variant="body2" color="text.secondary">
@@ -169,11 +189,12 @@ export default function ReactVirtualizedTable() {
                 <Button
                     color="error"
                     variant="contained"
-                    sx={{ width: '100%', justifyContent: 'center' }}
+                    sx={{ width: "100%", justifyContent: "center" }}
                     onClick={(e) => {
                         e.stopPropagation();
                         setBotToDelete(row);
-                    }}>
+                    }}
+                >
                     Удалить
                 </Button>
             </TableCell>
@@ -182,9 +203,9 @@ export default function ReactVirtualizedTable() {
 
     const skeletonRows = Array.from({ length: 10 }).map((_, index) => ({
         id: String(index),
-        name: '',
+        name: "",
         isOnline: false,
-        phone: '',
+        phone: "",
         newMessagesCount: 0,
     }));
 
@@ -209,9 +230,14 @@ export default function ReactVirtualizedTable() {
     );
 
     return (
-        <Paper style={{ height: 500, width: '100%' }}>
+        <Paper style={{ height: 500, width: "100%" }}>
             {!isLoading && bots.length === 0 ? (
-                <Box display="flex" justifyContent="center" alignItems="center" height="100%">
+                <Box
+                    display="flex"
+                    justifyContent="center"
+                    alignItems="center"
+                    height="100%"
+                >
                     <Typography variant="h6" color="error">
                         Ошибка загрузки
                     </Typography>
@@ -231,16 +257,23 @@ export default function ReactVirtualizedTable() {
                 <DialogTitle>Удалить бота?</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Вы уверены, что хотите удалить бота <strong>{botToDelete?.name}</strong>?
+                        Вы уверены, что хотите удалить бота{" "}
+                        <strong>{botToDelete?.name}</strong>?
                     </DialogContentText>
                 </DialogContent>
                 <DialogActions>
-                    <Button onClick={() => setBotToDelete(null)} color="primary">
+                    <Button
+                        onClick={() => setBotToDelete(null)}
+                        color="primary"
+                    >
                         Отмена
                     </Button>
                     <Button
-                        onClick={() => botToDelete && handleDelete(botToDelete.id)}
-                        color="error">
+                        onClick={() =>
+                            botToDelete && handleDelete(botToDelete.id)
+                        }
+                        color="error"
+                    >
                         Удалить
                     </Button>
                 </DialogActions>

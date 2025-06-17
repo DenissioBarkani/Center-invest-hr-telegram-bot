@@ -1,8 +1,9 @@
-import { useForm } from 'react-hook-form';
-import { Header } from '../components/Header';
-import { Box, Stack, TextField, Button, Alert, Snackbar } from '@mui/material';
-import { useState } from 'react';
-import { createNewBot } from '../api/apiBot';
+import { useForm } from "react-hook-form";
+import { Header } from "../components/Header";
+import { Box, Stack, TextField, Button } from "@mui/material";
+
+import { createNewBot } from "../api/apiBot";
+import { addNotification } from "../store/use-notification-store";
 
 interface Bot {
     name: string;
@@ -16,17 +17,7 @@ const AddBot: React.FC = () => {
         formState: { errors, isValid },
         handleSubmit,
         reset,
-    } = useForm<Bot>({ mode: 'onBlur' });
-
-    const [notification, setNotification] = useState<{
-        open: boolean;
-        message: string;
-        severity: 'success' | 'error';
-    }>({
-        open: false,
-        message: '',
-        severity: 'success',
-    });
+    } = useForm<Bot>({ mode: "onChange" });
 
     const onSubmit = async (data: Bot) => {
         try {
@@ -51,66 +42,40 @@ const AddBot: React.FC = () => {
 
             createNewBot(payload);
 
-            setNotification({
-                open: true,
-                message: 'Бот успешно добавлен!',
-                severity: 'success',
-            });
+            addNotification("Бот успешно добавлен!", "success", 6000);
             reset();
         } catch (error) {
-            // let errorMessage = 'Произошла неизвестная ошибка';
-
-            // if (axios.isAxiosError(error)) {
-            //     const axiosError = error as AxiosError;
-
-            //     if (axiosError.response) {
-            //         // Сервер ответил с кодом ошибки
-            //         errorMessage = `Ошибка сервера: ${axiosError.response.status}`;
-
-            //         if (axiosError.response.data) {
-            //             errorMessage += ` - ${JSON.stringify(axiosError.response.data)}`;
-            //         }
-            //     } else if (axiosError.request) {
-            //         // Запрос был сделан, но ответа не получено
-            //         errorMessage = 'Сервер не отвечает. Проверьте подключение к интернету.';
-            //     } else {
-            //         // Ошибка при настройке запроса
-            //         errorMessage = `Ошибка при настройке запроса: ${axiosError.message}`;
-            //     }
-            // } else if (error instanceof Error) {
-            //     errorMessage = error.message;
-            // }
-           setNotification({
-                open: true,
-                message: error instanceof Error ? error.message : 'Неизвестная ошибка',
-                severity: 'error',
-            });
+            addNotification(error instanceof Error
+                ? error.message
+                : "Неизвестная ошибка", "error", 6000);
         }
     };
 
-    const handleCloseNotification = () => {
-        setNotification((prev) => ({ ...prev, open: false }));
-    };
-
     return (
-        <Box component="form" onSubmit={handleSubmit(onSubmit)} noValidate maxWidth={600}>
+        <Box
+            component="form"
+            onSubmit={handleSubmit(onSubmit)}
+            noValidate
+            maxWidth={600}
+        >
             <Header title="Добавить Бота" />
             <Stack spacing={3}>
                 <TextField
                     label="Название бота"
                     fullWidth
                     variant="standard"
-                    {...register('name', {
-                        required: 'Имя обязательно',
+                    {...register("name", {
+                        required: "Имя обязательно",
                         maxLength: {
                             value: 64,
-                            message: 'Максимум 64 символа',
+                            message: "Максимум 64 символа",
                         },
                         validate: (value) =>
-                            value.trim().length > 0 || 'Название не может быть пустым',
+                            value.trim().length > 0 ||
+                            "Название не может быть пустым",
                     })}
                     error={!!errors.name}
-                    helperText={errors.name?.message?.toString() || ''}
+                    helperText={errors.name?.message?.toString() || ""}
                 />
 
                 <TextField
@@ -118,13 +83,14 @@ const AddBot: React.FC = () => {
                     label="Токен от BotFather"
                     fullWidth
                     variant="standard"
-                    {...register('token', {
-                        required: 'Токен обязателен',
+                    {...register("token", {
+                        required: "Токен обязателен",
                         validate: (value) =>
-                            value.trim().length > 0 || 'Токен не может быть пустым',
+                            value.trim().length > 0 ||
+                            "Токен не может быть пустым",
                     })}
                     error={!!errors.token}
-                    helperText={errors.token?.message?.toString() || ''}
+                    helperText={errors.token?.message?.toString() || ""}
                 />
 
                 <TextField
@@ -133,7 +99,7 @@ const AddBot: React.FC = () => {
                     rows={3}
                     fullWidth
                     variant="standard"
-                    {...register('description')}
+                    {...register("description")}
                 />
 
                 <Button
@@ -142,25 +108,13 @@ const AddBot: React.FC = () => {
                     disabled={!isValid}
                     color="primary"
                     fullWidth
-                    size="large">
+                    size="large"
+                >
                     Добавить
                 </Button>
             </Stack>
 
-            <Snackbar
-                role="alert"
-                open={notification.open}
-                autoHideDuration={6000}
-                onClose={handleCloseNotification}
-                anchorOrigin={{ vertical: 'top', horizontal: 'center' }}>
-                <Alert
-                    onClose={handleCloseNotification}
-                    severity={notification.severity}
-                    sx={{ width: '100%' }}
-                    variant="filled">
-                    {notification.message}
-                </Alert>
-            </Snackbar>
+
         </Box>
     );
 };
