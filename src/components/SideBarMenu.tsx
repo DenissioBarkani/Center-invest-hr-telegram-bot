@@ -1,12 +1,13 @@
-import { Link, useLocation } from 'react-router-dom';
+import AnalyticsRoundedIcon from '@mui/icons-material/AnalyticsRounded';
+import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
 import List from '@mui/material/List';
 import ListItem from '@mui/material/ListItem';
 import ListItemButton from '@mui/material/ListItemButton';
 import ListItemIcon from '@mui/material/ListItemIcon';
 import ListItemText from '@mui/material/ListItemText';
 import Stack from '@mui/material/Stack';
-import HomeRoundedIcon from '@mui/icons-material/HomeRounded';
-import AnalyticsRoundedIcon from '@mui/icons-material/AnalyticsRounded';
+import React from 'react';
+import { Link, useLocation } from 'react-router-dom';
 // import PeopleRoundedIcon from '@mui/icons-material/PeopleRounded';
 // import AssignmentRoundedIcon from '@mui/icons-material/AssignmentRounded';
 import SettingsRoundedIcon from '@mui/icons-material/SettingsRounded';
@@ -28,8 +29,12 @@ export const SideBarList: React.FC = () => {
   return (
     <Stack sx={{ flexGrow: 1, p: 1, justifyContent: 'space-between' }}>
       <List dense>
-        {mainListItems.map((item, index) => (
-          <ListItem key={index} disablePadding sx={{ display: 'block' }}>
+        {mainListItems.map((item) => (
+          <ListItem
+            key={`main-${item.text}`}
+            disablePadding
+            sx={{ display: 'block' }}
+          >
             <ListItemButton
               component={Link}
               to={item.to}
@@ -42,8 +47,12 @@ export const SideBarList: React.FC = () => {
         ))}
       </List>
       <List dense>
-        {secondaryListItems.map((item, index) => (
-          <ListItem key={index} disablePadding sx={{ display: 'block' }}>
+        {secondaryListItems.map((item) => (
+          <ListItem
+            key={`secondary-${item.text}`}
+            disablePadding
+            sx={{ display: 'block' }}
+          >
             <ListItemButton
               component={Link}
               to={item.to}

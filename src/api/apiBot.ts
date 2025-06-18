@@ -1,17 +1,17 @@
 // import { apiErrorHandle } from './apiErrorHandler';
-import { apiBots } from './config';
+import { apiBots } from './config.ts';
 
 export const getBots = async () => {
-        const response = await apiBots.get('/bo3ts');
-        return response.data;
+  const response = await apiBots.get('/bo3ts');
+  return response.data;
 };
 
 export const getBotInfo = async (botId: number) => {
-    const response = await apiBots.get(`/bots/${botId}/botinfo`);
-    return response.data[0];
+  const response = await apiBots.get(`/bots/${botId}/botinfo`);
+  return response.data[0];
 };
 
-// поменять botData когда будет не фэйк api 
+// поменять botData когда будет не фэйк api
 export const createNewBot = async (botData: {
     id: string;
     name: string;
@@ -21,25 +21,25 @@ export const createNewBot = async (botData: {
     // token: string;
     // description?: string;
 }) => {
-    // name: data.name.trim(),
-    //             id: Date.now().toString(),
-    //             isOnline: false,
-    //             newMessagesCount: 0,
-    //             createdAt: Date.now(),
-    const payload = {
-        ...botData,
-        // name: botData.name.trim(),
-        // id: Date.now().toString(),
-        // isOnline: false,
-        // newMessagesCount: 0,
-        // createdAt: Date.now(),
-    };
+  // name: data.name.trim(),
+  //             id: Date.now().toString(),
+  //             isOnline: false,
+  //             newMessagesCount: 0,
+  //             createdAt: Date.now(),
+  const payload = {
+    ...botData,
+    // name: botData.name.trim(),
+    // id: Date.now().toString(),
+    // isOnline: false,
+    // newMessagesCount: 0,
+    // createdAt: Date.now(),
+  };
 
-    const response = await apiBots.post(`/bots`, payload);
-    return response.data;
+  const response = await apiBots.post('/bots', payload);
+  return response.data;
 };
 
 export const deleteBot = async (botId: number) => {
-    const response = await apiBots.delete(`/bots/${botId}/botinfo`);
-    return response.data[0];
+  const response = await apiBots.delete(`/bots/${botId}/botinfo`);
+  return response.data[0];
 };

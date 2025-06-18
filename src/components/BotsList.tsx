@@ -1,36 +1,36 @@
-import * as React from "react";
+import { Cancel, CheckCircle, MessageRounded } from '@mui/icons-material';
 import {
-    Table,
-    TableBody,
-    TableCell,
-    TableContainer,
-    TableHead,
-    TableRow,
-    Paper,
-    Chip,
-    Typography,
-    Button,
-    Dialog,
-    DialogTitle,
-    DialogContent,
-    DialogContentText,
-    DialogActions,
-    Skeleton,
-    Box,
-} from "@mui/material";
-import { TableVirtuoso } from "react-virtuoso";
-import type { TableComponents } from "react-virtuoso";
-import { useNavigate } from "react-router-dom";
-import { Cancel, CheckCircle, MessageRounded } from "@mui/icons-material";
-import { getBots } from "../api/apiBot";
-import { type ApiError } from "../api/errorHandler";
-import { addNotification } from "../store/use-notification-store";
+  Box,
+  Button,
+  Chip,
+  Dialog,
+  DialogActions,
+  DialogContent,
+  DialogContentText,
+  DialogTitle,
+  Paper,
+  Skeleton,
+  Table,
+  TableBody,
+  TableCell,
+  TableContainer,
+  TableHead,
+  TableRow,
+  Typography,
+} from '@mui/material';
+import * as React from 'react';
+import { useNavigate } from 'react-router-dom';
+import type { TableComponents } from 'react-virtuoso';
+import { TableVirtuoso } from 'react-virtuoso';
+import { getBots } from '../api/apiBot.ts';
+import { type ApiError } from '../api/errorHandler.ts';
+import { addNotification } from '../store/use-notification-store.ts';
 
 interface Data {
-    id: string; // БЫЛО: number
-    name: string;
-    isOnline: boolean;
-    newMessagesCount: number;
+  id: string;
+  name: string;
+  isOnline: boolean;
+  newMessagesCount: number;
 }
 
 //
@@ -59,225 +59,269 @@ interface Data {
 //   { id: 15, name: 'Hill', isOnline: true, phone: '555-666-7777', newMessagesCount: 50 }
 // ];
 
+// Выносим компоненты из рендера
+const CustomTableRow: TableComponents<Data>['TableRow'] = ({
+  // eslint-disable-next-line react/prop-types
+  item,
+  ...props
+}) => {
+  const navigate = useNavigate();
+
+  const handleBotClick = (id: string) => {
+    navigate(`/bots/${id}`);
+  };
+
+  return (
+    <TableRow
+      {...props}
+      hover
+      sx={{ cursor: 'pointer' }}
+      // eslint-disable-next-line react/prop-types
+      onClick={() => handleBotClick(item.id)}
+    />
+  );
+};
+
+const SkeletonRow = () => (
+  <>
+    <TableCell>
+      <Skeleton variant="text" height={30} />
+    </TableCell>
+    <TableCell>
+      <Skeleton variant="text" height={30} width="80%" />
+    </TableCell>
+    <TableCell>
+      <Skeleton variant="rectangular" width="100%" height={30} />
+    </TableCell>
+    <TableCell>
+      <Skeleton variant="rectangular" width="100%" height={30} />
+    </TableCell>
+    <TableCell>
+      <Skeleton variant="rectangular" width="100%" height={30} />
+    </TableCell>
+  </>
+);
+
+const RowContent = ({
+  row,
+  onDeleteClick,
+}: {
+  row: Data;
+  onDeleteClick: (row: Data) => void;
+}) => (
+  <>
+    <TableCell align="left">{row.id}</TableCell>
+    <TableCell align="left">{row.name}</TableCell>
+    <TableCell align="center">
+      <Chip
+        label={row.isOnline === true ? 'Online' : 'Offline'}
+        color={row.isOnline === true ? 'success' : 'error'}
+        icon={row.isOnline === true ? <CheckCircle /> : <Cancel />}
+        sx={{
+          width: '100%',
+          justifyContent: 'center',
+          pointerEvents: 'none',
+        }}
+      />
+    </TableCell>
+    <TableCell align="center">
+      {row.newMessagesCount > 0 ? (
+        <Chip
+          label={row.newMessagesCount}
+          color="primary"
+          icon={<MessageRounded />}
+          sx={{
+            width: '100%',
+            justifyContent: 'center',
+            pointerEvents: 'none',
+          }}
+        />
+      ) : (
+        <Typography variant="body2" color="text.secondary">
+          Нет новых
+        </Typography>
+      )}
+    </TableCell>
+    <TableCell align="center">
+      <Button
+        color="error"
+        variant="contained"
+        sx={{ width: '100%', justifyContent: 'center' }}
+        onClick={(e) => {
+          e.stopPropagation();
+          onDeleteClick(row);
+        }}
+      >
+        Удалить
+      </Button>
+    </TableCell>
+  </>
+);
+
 function fixedHeaderContent() {
-    return (
-        <TableRow>
-            <TableCell align="left" style={{ width: 20 }}>
-                ID
-            </TableCell>
-            <TableCell align="left" style={{ width: 100 }}>
-                Бот
-            </TableCell>
-            <TableCell align="center" style={{ width: 50 }}>
-                Статус
-            </TableCell>
-            <TableCell align="center" style={{ width: 110 }}>
-                Новых сообщений
-            </TableCell>
-            <TableCell align="center" style={{ width: 90 }}>
-                Действия
-            </TableCell>
-        </TableRow>
-    );
+  return (
+    <TableRow>
+      <TableCell align="left" style={{ width: 20 }}>
+        ID
+      </TableCell>
+      <TableCell align="left" style={{ width: 100 }}>
+        Бот
+      </TableCell>
+      <TableCell align="center" style={{ width: 50 }}>
+        Статус
+      </TableCell>
+      <TableCell align="center" style={{ width: 110 }}>
+        Новых сообщений
+      </TableCell>
+      <TableCell align="center" style={{ width: 90 }}>
+        Действия
+      </TableCell>
+    </TableRow>
+  );
 }
 
-export default function ReactVirtualizedTable() {
-    const [bots, setBots] = React.useState<Data[]>([]);
-    const [isLoading, setIsLoading] = React.useState<boolean>(true);
+// Выносим компоненты таблицы за пределы основного компонента
+const ScrollerComponent = React.forwardRef<HTMLDivElement>((props, ref) => (
+  <TableContainer component={Paper} {...props} ref={ref} />
+));
 
-    const [botToDelete, setBotToDelete] = React.useState<Data | null>(null);
+const TableComponent = (props: any) => (
+  <Table
+    {...props}
+    sx={{ borderCollapse: 'separate', tableLayout: 'fixed' }}
+  />
+);
 
-    const navigate = useNavigate();
-    const handleBotClick = (id: string) => {
-        navigate(`/bots/${id}`);
-    };
+const TableHeadComponent = React.forwardRef<HTMLTableSectionElement>(
+  (props, ref) => (
+    <TableHead sx={{ background: 'white' }} {...props} ref={ref} />
+  )
+);
 
-    const handleDelete = (id: string) => {
-        setBots((prev) => prev.filter((bot) => bot.id !== id));
-        setBotToDelete(null);
-    };
+const TableBodyComponent = React.forwardRef<HTMLTableSectionElement>(
+  (props, ref) => <TableBody {...props} ref={ref} />
+);
 
-    
+const ReactVirtualizedTable = () => {
+  const [bots, setBots] = React.useState<Data[]>([]);
+  const [isLoading, setIsLoading] = React.useState<boolean>(true);
+  const [botToDelete, setBotToDelete] = React.useState<Data | null>(null);
 
-    const fetchBots = async () => {
-        setIsLoading(true);
-        try {
-            const data = await getBots();
-            setBots(data);
-        } catch (error: unknown) {
+  const navigate = useNavigate();
 
-            const apiError = error as ApiError;
-            addNotification(apiError.message, "error", 6000);
-            setBots([]);
-        } finally {
-            setIsLoading(false);
-        }
-    };
+  const handleBotClick = (id: string) => {
+    navigate(`/bots/${id}`);
+  };
 
-    React.useEffect(() => {
-        fetchBots();
-    }, []);
+  const handleDelete = (id: string) => {
+    setBots((prev) => prev.filter((bot) => bot.id !== id));
+    setBotToDelete(null);
+  };
 
-    const CustomTableRow: TableComponents<Data>["TableRow"] = ({
-        item,
-        ...props
-    }) => {
-        return (
-            <TableRow
-                {...props}
-                hover
-                sx={{ cursor: "pointer" }}
-                onClick={() => handleBotClick(item.id)}
-            />
-        );
-    };
+  const handleDeleteClick = (row: Data) => {
+    setBotToDelete(row);
+  };
 
-    const VirtuosoTableComponents: TableComponents<Data> = {
-        Scroller: React.forwardRef<HTMLDivElement>((props, ref) => (
-            <TableContainer component={Paper} {...props} ref={ref} />
-        )),
-        Table: (props) => (
-            <Table
-                {...props}
-                sx={{ borderCollapse: "separate", tableLayout: "fixed" }}
-            />
-        ),
-        TableHead: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
-            <TableHead sx={{ background: "white" }} {...props} ref={ref} />
-        )),
-        TableRow: CustomTableRow,
-        TableBody: React.forwardRef<HTMLTableSectionElement>((props, ref) => (
-            <TableBody {...props} ref={ref} />
-        )),
-    };
+  const fetchBots = async () => {
+    setIsLoading(true);
+    try {
+      const data = await getBots();
+      setBots(data);
+    } catch (error: unknown) {
+      const apiError = error as ApiError;
+      addNotification(apiError.message, 'error', 6000);
+      setBots([]);
+    } finally {
+      setIsLoading(false);
+    }
+  };
 
-    const rowContent = (_index: number, row: Data) => (
-        <>
-            <TableCell align="left">{row.id}</TableCell>
-            <TableCell align="left">{row.name}</TableCell>
-            <TableCell align="center">
-                <Chip
-                    label={row.isOnline === true ? "Online" : "Offline"}
-                    color={row.isOnline === true ? "success" : "error"}
-                    icon={row.isOnline === true ? <CheckCircle /> : <Cancel />}
-                    sx={{
-                        width: "100%",
-                        justifyContent: "center",
-                        pointerEvents: "none",
-                    }}
-                />
-            </TableCell>
-            <TableCell align="center">
-                {row.newMessagesCount > 0 ? (
-                    <Chip
-                        label={row.newMessagesCount}
-                        color="primary"
-                        icon={<MessageRounded />}
-                        sx={{
-                            width: "100%",
-                            justifyContent: "center",
-                            pointerEvents: "none",
-                        }}
-                    />
-                ) : (
-                    <Typography variant="body2" color="text.secondary">
-                        Нет новых
-                    </Typography>
-                )}
-            </TableCell>
-            <TableCell align="center">
-                <Button
-                    color="error"
-                    variant="contained"
-                    sx={{ width: "100%", justifyContent: "center" }}
-                    onClick={(e) => {
-                        e.stopPropagation();
-                        setBotToDelete(row);
-                    }}
-                >
-                    Удалить
-                </Button>
-            </TableCell>
-        </>
-    );
+  React.useEffect(() => {
+    fetchBots();
+  }, []);
 
-    const skeletonRows = Array.from({ length: 10 }).map((_, index) => ({
+  const VirtuosoTableComponents: TableComponents<Data> = React.useMemo(
+    () => ({
+      Scroller: ScrollerComponent,
+      Table: TableComponent,
+      TableHead: TableHeadComponent,
+      TableRow: CustomTableRow,
+      TableBody: TableBodyComponent,
+    }),
+    []
+  );
+
+  const rowContent = React.useCallback(
+    (_index: number, row: Data) => (
+      <RowContent row={row} onDeleteClick={handleDeleteClick} />
+    ),
+    []
+  );
+
+  const skeletonRows = React.useMemo(
+    () =>
+      Array.from({ length: 10 }).map((_, index) => ({
         id: String(index),
-        name: "",
+        name: '',
         isOnline: false,
-        phone: "",
         newMessagesCount: 0,
-    }));
+      })),
+    []
+  );
 
-    const SkeletonRow = () => (
-        <>
-            <TableCell>
-                <Skeleton variant="text" height={30} />
-            </TableCell>
-            <TableCell>
-                <Skeleton variant="text" height={30} width="80%" />
-            </TableCell>
-            <TableCell>
-                <Skeleton variant="rectangular" width="100%" height={30} />
-            </TableCell>
-            <TableCell>
-                <Skeleton variant="rectangular" width="100%" height={30} />
-            </TableCell>
-            <TableCell>
-                <Skeleton variant="rectangular" width="100%" height={30} />
-            </TableCell>
-        </>
-    );
+  const getItemContent = (loadingState: boolean) =>
+    (loadingState
+      ? () => <SkeletonRow />
+      : rowContent);
 
-    return (
-        <Paper style={{ height: 500, width: "100%" }}>
-            {!isLoading && bots.length === 0 ? (
-                <Box
-                    display="flex"
-                    justifyContent="center"
-                    alignItems="center"
-                    height="100%"
-                >
-                    <Typography variant="h6" color="error">
-                        Ошибка загрузки
-                    </Typography>
-                </Box>
-            ) : (
-                <TableVirtuoso
-                    data={isLoading ? skeletonRows : bots}
-                    components={VirtuosoTableComponents}
-                    fixedHeaderContent={fixedHeaderContent}
-                    itemContent={(index, row) =>
-                        isLoading ? <SkeletonRow /> : rowContent(index, row)
-                    }
-                />
-            )}
+  return (
+    <Paper style={{ height: 500, width: '100%' }}>
+      {!isLoading && bots.length === 0 ? (
+        <Box
+          display="flex"
+          justifyContent="center"
+          alignItems="center"
+          height="100%"
+        >
+          <Typography variant="h6" color="error">
+            Ошибка загрузки
+          </Typography>
+        </Box>
+      ) : (
+        <TableVirtuoso
+          data={isLoading ? skeletonRows : bots}
+          components={VirtuosoTableComponents}
+          fixedHeaderContent={fixedHeaderContent}
+          itemContent={getItemContent(isLoading)}
+        />
+      )}
 
-            <Dialog open={!!botToDelete} onClose={() => setBotToDelete(null)}>
-                <DialogTitle>Удалить бота?</DialogTitle>
-                <DialogContent>
-                    <DialogContentText>
-                        Вы уверены, что хотите удалить бота{" "}
-                        <strong>{botToDelete?.name}</strong>?
-                    </DialogContentText>
-                </DialogContent>
-                <DialogActions>
-                    <Button
-                        onClick={() => setBotToDelete(null)}
-                        color="primary"
-                    >
-                        Отмена
-                    </Button>
-                    <Button
-                        onClick={() =>
-                            botToDelete && handleDelete(botToDelete.id)
-                        }
-                        color="error"
-                    >
-                        Удалить
-                    </Button>
-                </DialogActions>
-            </Dialog>
-        </Paper>
-    );
-}
+      <Dialog open={!!botToDelete} onClose={() => setBotToDelete(null)}>
+        <DialogTitle>Удалить бота?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Вы уверены, что хотите удалить бота{' '}
+            <strong>{botToDelete?.name}</strong>?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setBotToDelete(null)}
+            color="primary"
+          >
+            Отмена
+          </Button>
+          <Button
+            onClick={() =>
+              botToDelete && handleDelete(botToDelete.id)}
+            color="error"
+          >
+            Удалить
+          </Button>
+        </DialogActions>
+      </Dialog>
+    </Paper>
+  );
+};
+
+export default ReactVirtualizedTable;
