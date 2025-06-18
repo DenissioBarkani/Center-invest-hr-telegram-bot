@@ -22,7 +22,7 @@ import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { TableComponents } from 'react-virtuoso';
 import { TableVirtuoso } from 'react-virtuoso';
-import { getBots } from '../api/apiBot.ts';
+import { deleteBot, getBots } from '../api/apiBot.ts';
 import { type ApiError } from '../api/errorHandler.ts';
 import { addNotification } from '../store/use-notification-store.ts';
 
@@ -206,6 +206,7 @@ const ReactVirtualizedTable = () => {
   const [bots, setBots] = React.useState<Data[]>([]);
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
   const [botToDelete, setBotToDelete] = React.useState<Data | null>(null);
+  const [needsUpdate, setNeedsUpdate] = React.useState<boolean>(false);
 
   const navigate = useNavigate();
 
@@ -213,9 +214,18 @@ const ReactVirtualizedTable = () => {
     navigate(`/bots/${id}`);
   };
 
-  const handleDelete = (id: string) => {
-    setBots((prev) => prev.filter((bot) => bot.id !== id));
-    setBotToDelete(null);
+  const handleDelete = async (id: string) => {
+    try {
+      await deleteBot(Number(id));
+      setBots((prev) => prev.filter((bot) => bot.id !== id));
+      setNeedsUpdate(true); // Устанавливаем флаг обновления
+      addNotification('Бот успешно удален', 'success', 3000);
+    } catch (error: unknown) {
+      const apiError = error as ApiError;
+      addNotification(apiError.message, 'error', 6000);
+    } finally {
+      setBotToDelete(null);
+    }
   };
 
   const handleDeleteClick = (row: Data) => {
@@ -237,8 +247,10 @@ const ReactVirtualizedTable = () => {
   };
 
   React.useEffect(() => {
+
     fetchBots();
-  }, []);
+    setNeedsUpdate(false);
+  }, [needsUpdate]);
 
   const VirtuosoTableComponents: TableComponents<Data> = React.useMemo(
     () => ({
@@ -270,10 +282,7 @@ const ReactVirtualizedTable = () => {
   );
 
   const getItemContent = (loadingState: boolean) =>
-    (loadingState
-      ? () => <SkeletonRow />
-      : rowContent);
-
+    (loadingState ? () => <SkeletonRow /> : rowContent);
   return (
     <Paper style={{ height: 500, width: '100%' }}>
       {!isLoading && bots.length === 0 ? (

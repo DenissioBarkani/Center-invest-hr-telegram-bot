@@ -60,7 +60,7 @@ export const UserAnswerCard: React.FC<UserAnswerCardProps> = ({ response }) => {
                   {Array.isArray(response.response) ? (
                     response.response.map((item, index) => (
                       <ListItem
-                        key={`answer-${response.id}`}
+                        key={`answer-${index + 1}`}
                         disableGutters
                         sx={{ p: 0 }}
                       >

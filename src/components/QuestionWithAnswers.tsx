@@ -56,8 +56,8 @@ const QuestionWithAnswersComponent = ({ usersResponse }: QuestionWithAnswersProp
           }}
         >
           <List dense disablePadding>
-            {usersResponse.answers.map((answer, i) => (
-              <UserAnswerCard key={`answer-${answer.id}`} response={answer} />
+            {usersResponse.answers.map((answer) => (
+              <UserAnswerCard key={`answer-${answer.id}-${usersResponse.countResponse}`} response={answer} />
             ))}
           </List>
         </Box>

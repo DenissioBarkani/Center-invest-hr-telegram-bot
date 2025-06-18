@@ -44,7 +44,7 @@ export const Question: React.FC<Props> = ({ question }) => {
       >
         {question.answers.map((answer, i) => (
           <Typography
-            key={`answer-${question.id}`}
+            key={`answer-${i + 1}`}
             component="li"
             variant="subtitle2"
             sx={{ mt: 0.5 }}

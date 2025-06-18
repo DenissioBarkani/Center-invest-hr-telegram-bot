@@ -13,13 +13,13 @@ export const getBotInfo = async (botId: string) => {
 
 // поменять botData когда будет не фэйк api
 export const createNewBot = async (botData: {
-    id: string;
-    name: string;
-    isOnline: boolean;
-    newMessagesCount: number;
-    createdAt: number;
-    // token: string;
-    // description?: string;
+  id: string;
+  name: string;
+  isOnline: boolean;
+  newMessagesCount: number;
+  createdAt: number;
+  // token: string;
+  // description?: string;
 }) => {
   // name: data.name.trim(),
   //             id: Date.now().toString(),
@@ -40,6 +40,6 @@ export const createNewBot = async (botData: {
 };
 
 export const deleteBot = async (botId: number) => {
-  const response = await apiBots.delete(`/bots/${botId}/botinfo`);
-  return response.data[0];
+  // const response = await apiBots.delete(`/bots/${botId}/botinfo`);
+  // return response.data[0];
 };
