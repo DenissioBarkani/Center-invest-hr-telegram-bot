@@ -2,11 +2,11 @@
 import { apiBots } from './config.ts';
 
 export const getBots = async () => {
-  const response = await apiBots.get('/bo3ts');
+  const response = await apiBots.get('/bots');
   return response.data;
 };
 
-export const getBotInfo = async (botId: number) => {
+export const getBotInfo = async (botId: string) => {
   const response = await apiBots.get(`/bots/${botId}/botinfo`);
   return response.data[0];
 };

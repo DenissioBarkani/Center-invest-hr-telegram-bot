@@ -14,12 +14,15 @@ import TabUserResponses from '../components/TabUserResponses.tsx';
 import { BotInfoCard, type BotProps } from '../components/BotInfoCard.tsx';
 import { useParams, useSearchParams } from 'react-router-dom';
 import axios from 'axios';
+import { getBotInfo } from '../api/apiBot.ts';
+import type { ApiError } from '../api/errorHandler.ts';
+import { addNotification } from '../store/use-notification-store.ts';
 
 const BotPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
   const [botInfo, setBotInfo] = useState<BotProps | null>(null);
   const [loading, setLoading] = useState(true);
-  const [error, setError] = useState<string | null>(null);
+  const [errorState, setErrorState] = useState<string | null>(null);
 
   const { id } = useParams<{ id: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
@@ -41,49 +44,71 @@ const BotPage: React.FC = () => {
     );
   };
 
+  // useEffect(() => {
+  //   if (!id) return;
+  //   const fetchData = async () => {
+  //     setLoading(true);
+  //     setErrorState(null);
+
+  //     try {
+  //       const response = await axios.get(
+  //         `https://6842d197e1347494c31e0af7.mockapi.io/bots/${id}/botinfo`
+  //       );
+  //       if (response.status < 200 || response.status >= 300) {
+  //         throw new Error(`HTTP error! status: ${response.status}`);
+  //       }
+  //       setBotInfo(response.data[0]);
+  //     } catch (error) {
+  //       if (axios.isAxiosError(error)) {
+  //         if (error.response) {
+  //           // eslint-disable-next-line no-console
+  //           console.error('Server error:', error.response.status);
+  //           setErrorState(`Ошибка сервера: ${error.response.status}`);
+  //         } else if (error.request) {
+  //           // eslint-disable-next-line no-console
+  //           console.error('Network error:', error.message);
+  //           setErrorState('Ошибка сети: нет ответа от сервера');
+  //         } else {
+  //           // eslint-disable-next-line no-console
+  //           console.error('Request error:', error.message);
+  //           setErrorState(`Ошибка запроса: ${error.message}`);
+  //         }
+  //       } else {
+  //         setErrorState(
+  //           `Произошла ошибка: ${error instanceof Error
+  //             ? error.message
+  //             : 'Неизвестная ошибка'
+  //           }`
+  //         );
+  //       }
+  //     } finally {
+  //       setLoading(false);
+  //     }
+  //   };
+  //   fetchData();
+  // }, [id]);
+
   useEffect(() => {
     if (!id) return;
     const fetchData = async () => {
       setLoading(true);
-      setError(null);
+      setErrorState(null);
 
       try {
-        const response = await axios.get(
-          `https://6842d197e1347494c31e0af7.mockapi.io/bots/${id}/botinfo`
-        );
-        if (response.status < 200 || response.status >= 300) {
-          throw new Error(`HTTP error! status: ${response.status}`);
-        }
-        setBotInfo(response.data[0]);
+        const response = await getBotInfo('323')
+        setBotInfo(response);
       } catch (error) {
-        if (axios.isAxiosError(error)) {
-          if (error.response) {
-            // eslint-disable-next-line no-console
-            console.error('Server error:', error.response.status);
-            setError(`Ошибка сервера: ${error.response.status}`);
-          } else if (error.request) {
-            // eslint-disable-next-line no-console
-            console.error('Network error:', error.message);
-            setError('Ошибка сети: нет ответа от сервера');
-          } else {
-            // eslint-disable-next-line no-console
-            console.error('Request error:', error.message);
-            setError(`Ошибка запроса: ${error.message}`);
-          }
-        } else {
-          setError(
-            `Произошла ошибка: ${error instanceof Error
-              ? error.message
-              : 'Неизвестная ошибка'
-            }`
-          );
-        }
+        // eslint-disable-next-line no-console
+        // console.error(`error ${error}`)
+        const apiError = error as ApiError;
+        addNotification(apiError.message, 'error', 6000);
       } finally {
         setLoading(false);
       }
     };
     fetchData();
   }, [id]);
+
 
   return (
     <Box>
@@ -95,9 +120,10 @@ const BotPage: React.FC = () => {
               <CircularProgress />
             </Box>
           )}
-          {!loading && error && <Typography color="error">{error}</Typography>}
-          {!loading && !error && botInfo && <BotInfoCard bot={botInfo} />}
-          {!loading && !error && !botInfo && <Typography>Бот не найден</Typography>}
+          {!loading && errorState && <Typography color="error">{errorState}</Typography>}
+          {!loading && !errorState && botInfo && <BotInfoCard bot={botInfo} />}
+          {!loading && !errorState && !botInfo
+          && <Typography variant='h6' sx={{ py: 2, color: 'red' }}>Данные бота не найдены</Typography>}
         </Paper>
 
         <Tabs value={activeTab} onChange={handleTabChange}>
