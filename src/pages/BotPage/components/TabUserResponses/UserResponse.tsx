@@ -19,11 +19,11 @@ export interface UserAnswer {
   date: string;
 }
 
-interface UserAnswerCardProps {
+interface UserResponseProps {
   response: UserAnswer;
 }
 
-export const UserAnswerCard: React.FC<UserAnswerCardProps> = ({ response }) => {
+export const UserResponse: React.FC<UserResponseProps> = ({ response }) => {
   return (
     <Box minHeight={110}>
       <Divider />

@@ -22,9 +22,9 @@ import * as React from 'react';
 import { useNavigate } from 'react-router-dom';
 import type { TableComponents } from 'react-virtuoso';
 import { TableVirtuoso } from 'react-virtuoso';
-import { deleteBot, getBots } from '../api/apiBot.ts';
-import { type ApiError } from '../api/errorHandler.ts';
-import { addNotification } from '../store/use-notification-store.ts';
+import { deleteBot, getBots } from '../../../shared/api/apiBot.ts';
+import { type ApiError } from '../../../shared/api/errorHandler.ts';
+import { addNotification } from '../../../shared/store/use-notification-store.ts';
 
 interface Data {
   id: string;

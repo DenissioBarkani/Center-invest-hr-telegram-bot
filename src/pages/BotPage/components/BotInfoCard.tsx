@@ -1,8 +1,8 @@
 import { Cancel, CheckCircle, Delete, Edit, Save } from '@mui/icons-material';
-import { Box, TextField, Typography, Button, Chip } from '@mui/material';
+import { Box, Button, Chip, TextField, Typography } from '@mui/material';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { updateBot } from '../api/apiBot.ts';
+import { updateBot } from '../../../shared/api/apiBot.ts';
 
 export interface BotProps {
   botId: number;

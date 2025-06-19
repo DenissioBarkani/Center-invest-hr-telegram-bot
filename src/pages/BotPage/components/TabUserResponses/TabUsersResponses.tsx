@@ -2,8 +2,8 @@ import { QuestionAnswer } from '@mui/icons-material';
 import { List, Paper, Typography } from '@mui/material';
 
 import { useEffect } from 'react';
-import UserResponsesItem from './QuestionWithAnswers.tsx';
-import type { UserAnswer } from './UserAnswerCard';
+import type { UserAnswer } from './UserResponse.tsx';
+import ResponsesItem from './ResponsesItem.tsx';
 
 export interface QuestionWithAnswers {
   questionText: string;
@@ -63,7 +63,7 @@ const mockDataResponses: QuestionWithAnswers[] = [
 
 // titleAnswer: 'Как вас зовут?'
 
-const UserResponsesTab = () => {
+const TabUsersResponses = () => {
   useEffect(() => {
     // Инициализация компонента
   }, []);
@@ -84,7 +84,7 @@ const UserResponsesTab = () => {
 
       <List>
         {mockDataResponses.map((usersResponse) => (
-          <UserResponsesItem
+          <ResponsesItem
             key={`response-${usersResponse.questionText}`}
             usersResponse={usersResponse}
           />
@@ -94,4 +94,4 @@ const UserResponsesTab = () => {
   );
 };
 
-export default UserResponsesTab;
+export default TabUsersResponses;

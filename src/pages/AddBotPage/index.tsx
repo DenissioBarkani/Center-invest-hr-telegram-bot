@@ -1,9 +1,9 @@
+import { Box, Button, Stack, TextField } from '@mui/material';
 import React from 'react';
 import { useForm } from 'react-hook-form';
-import { Header } from '../components/Header.tsx';
-import { Box, Stack, TextField, Button } from '@mui/material';
-import { createNewBot } from '../api/apiBot.ts';
-import { addNotification } from '../store/use-notification-store.ts';
+import { createNewBot } from '../../shared/api/apiBot.ts';
+import { addNotification } from '../../shared/store/use-notification-store.ts';
+import { Header } from '../../shared/ui/Header.tsx';
 
 interface Bot {
   name: string;

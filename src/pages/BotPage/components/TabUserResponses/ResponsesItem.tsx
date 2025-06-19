@@ -1,14 +1,14 @@
 import { CommentOutlined, ExpandLess, ExpandMore } from '@mui/icons-material';
-import { Paper, ListItem, IconButton, ListItemText, Box, Typography, Collapse, List } from '@mui/material';
+import { Box, Collapse, IconButton, List, ListItem, ListItemText, Paper, Typography } from '@mui/material';
 import { useState } from 'react';
-import { UserAnswerCard } from './UserAnswerCard.tsx';
-import type { QuestionWithAnswers } from './TabUserResponses';
+import type { QuestionWithAnswers } from './TabUsersResponses.tsx';
+import { UserResponse } from './UserResponse.tsx';
 
 interface QuestionWithAnswersProps {
   usersResponse: QuestionWithAnswers;
 }
 
-const QuestionWithAnswersComponent = ({ usersResponse }: QuestionWithAnswersProps) => {
+const ResponsesItem = ({ usersResponse }: QuestionWithAnswersProps) => {
   const [open, setOpen] = useState(false);
 
   const MAX_VISIBLE_ITEMS = 2; // Количество элементов до скролла
@@ -57,7 +57,7 @@ const QuestionWithAnswersComponent = ({ usersResponse }: QuestionWithAnswersProp
         >
           <List dense disablePadding>
             {usersResponse.answers.map((answer) => (
-              <UserAnswerCard key={`answer-${answer.id}-${usersResponse.countResponse}`} response={answer} />
+              <UserResponse key={`answer-${answer.id}-${usersResponse.countResponse}`} response={answer} />
             ))}
           </List>
         </Box>
@@ -66,4 +66,4 @@ const QuestionWithAnswersComponent = ({ usersResponse }: QuestionWithAnswersProp
   );
 };
 
-export default QuestionWithAnswersComponent;
+export default ResponsesItem;

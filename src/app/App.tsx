@@ -1,11 +1,11 @@
 import type { JSX } from 'react';
 import { Navigate, Route, Routes } from 'react-router-dom';
+import AddBot from '../pages/AddBotPage/index.tsx';
+import BotPage from '../pages/BotPage/index.tsx';
+import HomePage from '../pages/HomePage/index.tsx';
+import LoginPage from '../pages/LoginPage/index.tsx';
+import { useIsAuth } from '../shared/store/use-auth-store.ts';
 import { Layout } from './Layout.tsx';
-import AddBot from './pages/AddBot.tsx';
-import BotPage from './pages/BotPage.tsx';
-import Home from './pages/Home.tsx';
-import LoginPage from './pages/LoginPage.tsx';
-import { useIsAuth } from './store/use-auth-store.ts';
 
 // Компонент для защищённых маршрутов
 const PrivateRoute = ({ children }: { children: JSX.Element }) => {
@@ -38,7 +38,7 @@ const App = () => {
           path="/"
           element={(
             <PrivateRoute>
-              <Home />
+              <HomePage />
             </PrivateRoute>
           )}
         />

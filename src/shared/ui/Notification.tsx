@@ -5,7 +5,7 @@ import { useNotificationStore } from '../store/use-notification-store.ts';
 
 export const NotificationContainer: React.FC = () => {
   const { message, severity, open, autoHideDuration, closeNotification } =
-        useNotificationStore();
+    useNotificationStore();
 
   return (
     <Snackbar

@@ -27,7 +27,7 @@ import {
 } from '@mui/material';
 import Stack from '@mui/material/Stack';
 import Typography from '@mui/material/Typography';
-import { logout, useIsAuth } from '../store/use-auth-store.ts';
+import { logout, useIsAuth } from '../../store/use-auth-store.ts';
 import { SideBarList } from './SideBarMenu.tsx';
 // import SelectContent from './SelectContent';
 // import MenuContent from './MenuContent';

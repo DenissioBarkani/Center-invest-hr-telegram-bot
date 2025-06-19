@@ -1,19 +1,19 @@
-import React from 'react';
+import { zodResolver } from '@hookform/resolvers/zod';
+import { SmartToy } from '@mui/icons-material';
 import {
+  Avatar,
   Box,
   Button,
   Container,
+  CssBaseline,
   TextField,
   Typography,
-  Avatar,
-  CssBaseline,
 } from '@mui/material';
-import { SmartToy } from '@mui/icons-material';
-import { useNavigate } from 'react-router-dom';
+import React from 'react';
 import { useForm } from 'react-hook-form';
-import { zodResolver } from '@hookform/resolvers/zod';
+import { useNavigate } from 'react-router-dom';
 import { z } from 'zod';
-import { login } from '../store/use-auth-store.ts';
+import { login } from '../../shared/store/use-auth-store.ts';
 // import { useAuthStore } from "../store/authStore";
 
 const schema = z.object({
@@ -42,9 +42,7 @@ const LoginPage: React.FC = () => {
       // ⚠️ Здесь будет запрос к API — сейчас заглушка
       // eslint-disable-next-line no-console
       console.log('Отправка данных:', data);
-      // await new Promise((resolve) => setTimeout(resolve, 1000)); // Заглушка задержки
-      await login(data.email, data.password); // ⬅ здесь вызов твоего zustand login
-      // Представим, что получили token с сервера
+      await login(data.email, data.password);
       // login("mock_token_value");
       navigate('/');
     } catch (err) {

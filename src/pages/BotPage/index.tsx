@@ -1,21 +1,21 @@
-import React, { useState, useEffect } from 'react';
 import {
   Box,
-  Paper,
-  Divider,
-  Tabs,
-  Tab,
   CircularProgress,
+  Divider,
+  Paper,
+  Tab,
+  Tabs,
   Typography,
 } from '@mui/material';
-import { Header } from '../components/Header.tsx';
-import TabQuestions from '../components/TabQuestions.tsx';
-import TabUserResponses from '../components/TabUserResponses.tsx';
-import { BotInfoCard, type BotProps } from '../components/BotInfoCard.tsx';
+import React, { useEffect, useState } from 'react';
 import { useParams, useSearchParams } from 'react-router-dom';
-import { getBotInfo } from '../api/apiBot.ts';
-import type { ApiError } from '../api/errorHandler.ts';
-import { addNotification } from '../store/use-notification-store.ts';
+import { getBotInfo } from '../../shared/api/apiBot.ts';
+import type { ApiError } from '../../shared/api/errorHandler.ts';
+import { addNotification } from '../../shared/store/use-notification-store.ts';
+import { Header } from '../../shared/ui/Header.tsx';
+import { BotInfoCard, type BotProps } from './components/BotInfoCard.tsx';
+import TabQuestions from './components/TabQuestionsCreate/TabQuestions.tsx';
+import TabUsersResponses from './components/TabUserResponses/TabUsersResponses.tsx';
 
 const BotPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -25,6 +25,7 @@ const BotPage: React.FC = () => {
 
   const { id } = useParams<{ id: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
+  const [notCon, setNotCon] = useState(false)
 
   // Определяем активную вкладку из URL при монтировании
   useEffect(() => {
@@ -94,13 +95,15 @@ const BotPage: React.FC = () => {
       setErrorState(null);
 
       try {
-        const response = await getBotInfo('323')
+        const response = await getBotInfo(id)
         setBotInfo(response);
+        setNotCon(false)
       } catch (error) {
         // eslint-disable-next-line no-console
         // console.error(`error ${error}`)
         const apiError = error as ApiError;
         addNotification(apiError.message, 'error', 6000);
+        setNotCon(true)
       } finally {
         setLoading(false);
       }
@@ -108,6 +111,35 @@ const BotPage: React.FC = () => {
     fetchData();
   }, [id]);
 
+  if (loading) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="100vh"
+        width="100%"
+      >
+        <CircularProgress />
+      </Box>
+    );
+  }
+
+  if (notCon) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="100vh" // или "100%" если родитель растянут
+        width="100%"
+      >
+        <Typography variant='h6' sx={{ color: 'red' }}>
+          Данные бота не найдены
+        </Typography>
+      </Box>
+    );
+  }
 
   return (
     <Box>
@@ -122,7 +154,7 @@ const BotPage: React.FC = () => {
           {!loading && errorState && <Typography color="error">{errorState}</Typography>}
           {!loading && !errorState && botInfo && <BotInfoCard bot={botInfo} />}
           {!loading && !errorState && !botInfo
-          && <Typography variant='h6' sx={{ py: 2, color: 'red' }}>Данные бота не найдены</Typography>}
+            && <Typography variant='h6' sx={{ py: 2, color: 'red' }}>Данные бота не найдены</Typography>}
         </Paper>
 
         <Tabs value={activeTab} onChange={handleTabChange}>
@@ -133,7 +165,7 @@ const BotPage: React.FC = () => {
         <Divider sx={{ mb: 3 }} />
 
         {activeTab === 0 && <TabQuestions />}
-        {activeTab === 1 && <TabUserResponses />}
+        {activeTab === 1 && <TabUsersResponses />}
       </Box>
     </Box>
   );

@@ -1,11 +1,11 @@
-import React from 'react';
-import Box from '@mui/material/Box';
 import { Button, Stack } from '@mui/material';
+import Box from '@mui/material/Box';
+import React from 'react';
 import { Link } from 'react-router-dom';
-import { Header } from '../components/Header.tsx';
-import BotsList from '../components/BotsList.tsx';
+import { Header } from '../../shared/ui/Header.tsx';
+import BotsList from './components/BotsList.tsx';
 
-const Home: React.FC = () => {
+const HomePage: React.FC = () => {
   return (
     <Box>
       <Header title="Боты" />
@@ -26,4 +26,4 @@ const Home: React.FC = () => {
   );
 };
 
-export default Home;
+export default HomePage;

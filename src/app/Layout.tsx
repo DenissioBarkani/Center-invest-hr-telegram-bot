@@ -1,8 +1,8 @@
 import Box from '@mui/material/Box';
 
 import { Outlet } from 'react-router-dom';
-import { NotificationContainer } from './components/Notification.tsx';
-import { SideBar } from './components/SideBar.tsx';
+import { NotificationContainer } from '../shared/ui/Notification.tsx';
+import { SideBar } from '../shared/ui/SideBar/SideBar.tsx';
 
 export const Layout = () => {
   return (
