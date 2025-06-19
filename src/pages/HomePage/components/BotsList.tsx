@@ -305,7 +305,8 @@ const ReactVirtualizedTable = () => {
         />
       )}
 
-      <Dialog open={!!botToDelete} onClose={() => setBotToDelete(null)}>
+      <Dialog disableEnforceFocus
+        disableAutoFocus open={!!botToDelete} onClose={() => setBotToDelete(null)}>
         <DialogTitle>Удалить бота?</DialogTitle>
         <DialogContent>
           <DialogContentText>

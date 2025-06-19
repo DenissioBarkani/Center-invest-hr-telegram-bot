@@ -1,8 +1,15 @@
 import { Cancel, CheckCircle, Delete, Edit, Save } from '@mui/icons-material';
-import { Box, Button, Chip, TextField, Typography } from '@mui/material';
+import {
+  Box, Button, Chip, Dialog, DialogActions,
+  DialogContent, DialogContentText, DialogTitle,
+  TextField, Typography
+} from '@mui/material';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { updateBot } from '../../../shared/api/apiBot.ts';
+import { deleteBot, updateBot } from '../../../shared/api/apiBot.ts';
+import { addNotification } from '../../../shared/store/use-notification-store.ts';
+import type { ApiError } from '../../../shared/api/errorHandler.ts';
+import { useNavigate } from 'react-router-dom';
 
 export interface BotProps {
   botId: number;
@@ -18,7 +25,8 @@ interface BotInfoCardProps {
 
 export const BotInfoCard: React.FC<BotInfoCardProps> = ({ bot }) => {
   const [isEditing, setIsEditing] = useState(false);
-
+  const [botToDelete, setBotToDelete] = React.useState<boolean>(false);
+  const navigate = useNavigate();
   const { register, handleSubmit, reset, formState: { errors, isDirty, isValid } } = useForm<BotProps>({
     defaultValues: bot,
     mode: 'onChange',
@@ -34,11 +42,29 @@ export const BotInfoCard: React.FC<BotInfoCardProps> = ({ bot }) => {
     setIsEditing(false);
   };
 
+  const handleDelete = async (id: number) => {
+    try {
+      // await deleteBot(Number(id));
+      addNotification('Бот успешно удален', 'success', 3000);
+      navigate('/');
+    } catch (error: unknown) {
+      const apiError = error as ApiError;
+      addNotification(apiError.message, 'error', 6000);
+    } finally {
+      setBotToDelete(false);
+    }
+  };
+
+  const handleDeleteClick = () => {
+    setBotToDelete(true);
+  };
+
   const onSubmit = async (data: BotProps) => {
     try {
       await updateBot(bot.botId, data); // можно передавать только изменённые поля, если нужно
       setIsEditing(false);
       reset(data);
+
     } catch (error) {
       // обработка ошибки
       console.error('Ошибка обновления бота:', error);
@@ -69,13 +95,42 @@ export const BotInfoCard: React.FC<BotInfoCardProps> = ({ bot }) => {
         <Button variant="contained" startIcon={<Edit />} onClick={handleEdit}>
           Редактировать
         </Button>
-        <Button variant="contained" color="error" startIcon={<Delete />}>
+        <Button
+          onClick={handleDeleteClick}
+          variant="contained"
+          color="error"
+          startIcon={<Delete />}>
           Удалить бота
         </Button>
+
       </Box>
+
+      <Dialog disableEnforceFocus
+        disableAutoFocus open={botToDelete} onClose={() => setBotToDelete(false)}>
+        <DialogTitle>Удалить бота?</DialogTitle>
+        <DialogContent>
+          <DialogContentText>
+            Вы уверены, что хотите удалить бота <strong>{bot.name}</strong>?
+          </DialogContentText>
+        </DialogContent>
+        <DialogActions>
+          <Button
+            onClick={() => setBotToDelete(false)}
+            color="primary"
+          >
+            Отмена
+          </Button>
+          <Button
+            onClick={() => handleDelete(bot.botId)}
+            color="error"
+          >
+            Удалить
+          </Button>
+        </DialogActions>
+      </Dialog>
     </Box>
   );
-
+  // handleDelete(botToDelete.id)
   const renderEditMode = () => (
     <Box
       component="form"
