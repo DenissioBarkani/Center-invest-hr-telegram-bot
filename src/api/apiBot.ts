@@ -39,6 +39,22 @@ export const createNewBot = async (botData: {
   return response.data;
 };
 
+
+export interface UpdateBotProps {
+  // id: string,
+  name: string,
+  botId: number;
+  token: string;
+  description: string;
+  isActive: boolean;
+
+}
+
+export const updateBot = async (botId: number, updatedFields: Partial<UpdateBotProps>) => {
+  const response = await apiBots.put(`/bots/${botId}`, updatedFields);
+  return response.data;
+};
+
 export const deleteBot = async (botId: number) => {
   // const response = await apiBots.delete(`/bots/${botId}/botinfo`);
   // return response.data[0];

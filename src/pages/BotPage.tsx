@@ -13,7 +13,6 @@ import TabQuestions from '../components/TabQuestions.tsx';
 import TabUserResponses from '../components/TabUserResponses.tsx';
 import { BotInfoCard, type BotProps } from '../components/BotInfoCard.tsx';
 import { useParams, useSearchParams } from 'react-router-dom';
-import axios from 'axios';
 import { getBotInfo } from '../api/apiBot.ts';
 import type { ApiError } from '../api/errorHandler.ts';
 import { addNotification } from '../store/use-notification-store.ts';

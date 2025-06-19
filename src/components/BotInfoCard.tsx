@@ -2,17 +2,18 @@ import { Cancel, CheckCircle, Delete, Edit, Save } from '@mui/icons-material';
 import { Box, TextField, Typography, Button, Chip } from '@mui/material';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
+import { updateBot } from '../api/apiBot.ts';
 
 export interface BotProps {
-    botId: number;
-    name: string;
-    token: string;
-    description: string;
-    isActive: boolean;
+  botId: number;
+  name: string;
+  token: string;
+  description: string;
+  isActive: boolean;
 }
 
 interface BotInfoCardProps {
-    bot: BotProps;
+  bot: BotProps;
 }
 
 export const BotInfoCard: React.FC<BotInfoCardProps> = ({ bot }) => {
@@ -33,10 +34,15 @@ export const BotInfoCard: React.FC<BotInfoCardProps> = ({ bot }) => {
     setIsEditing(false);
   };
 
-  const onSubmit = (data: BotProps) => {
-    console.log('Сохранение данных бота:', data);
-    setIsEditing(false);
-    reset(data);
+  const onSubmit = async (data: BotProps) => {
+    try {
+      await updateBot(bot.botId, data); // можно передавать только изменённые поля, если нужно
+      setIsEditing(false);
+      reset(data);
+    } catch (error) {
+      // обработка ошибки
+      console.error('Ошибка обновления бота:', error);
+    }
   };
 
   const renderViewMode = () => (
