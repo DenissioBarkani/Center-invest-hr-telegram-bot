@@ -25,6 +25,7 @@ import { TableVirtuoso } from 'react-virtuoso';
 import { deleteBot, getBots } from '../../../shared/api/apiBot.ts';
 import { type ApiError } from '../../../shared/api/errorHandler.ts';
 import { addNotification } from '../../../shared/store/use-notification-store.ts';
+import { MyDialog } from '../../../shared/ui/myDialog.tsx';
 
 interface Data {
   id: string;
@@ -304,8 +305,15 @@ const ReactVirtualizedTable = () => {
           itemContent={getItemContent(isLoading)}
         />
       )}
+      <MyDialog
+        open={!!botToDelete}
+        onClose={() => setBotToDelete(null)}
+        onConfirm={() => botToDelete && handleDelete(botToDelete.id)}
+        title="Удалить бота?"
+        description={botToDelete ? `Вы уверены, что хотите удалить бота ${botToDelete.name}?` : ''}
+      />
 
-      <Dialog disableEnforceFocus
+      {/* <Dialog disableEnforceFocus
         disableAutoFocus open={!!botToDelete} onClose={() => setBotToDelete(null)}>
         <DialogTitle>Удалить бота?</DialogTitle>
         <DialogContent>
@@ -329,7 +337,7 @@ const ReactVirtualizedTable = () => {
             Удалить
           </Button>
         </DialogActions>
-      </Dialog>
+      </Dialog> */}
     </Paper>
   );
 };
