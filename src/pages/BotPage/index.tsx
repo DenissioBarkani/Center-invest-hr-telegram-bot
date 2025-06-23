@@ -13,13 +13,14 @@ import { getBotInfo } from '../../shared/api/apiBot.ts';
 import type { ApiError } from '../../shared/api/errorHandler.ts';
 import { addNotification } from '../../shared/store/use-notification-store.ts';
 import { Header } from '../../shared/ui/Header.tsx';
-import { BotInfoCard, type BotProps } from './components/BotInfoCard.tsx';
+import { BotInfoCard } from './components/BotInfoCard.tsx';
 import TabQuestions from './components/TabQuestionsCreate/TabQuestions.tsx';
 import TabUsersResponses from './components/TabUserResponses/TabUsersResponses.tsx';
+import type { BotCardInfoType } from '../../shared/types/apiTypes.ts';
 
 const BotPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
-  const [botInfo, setBotInfo] = useState<BotProps | null>(null);
+  const [botInfo, setBotInfo] = useState<BotCardInfoType | null>(null);
   const [loading, setLoading] = useState(true);
   const [errorState, setErrorState] = useState<string | null>(null);
 
@@ -99,8 +100,6 @@ const BotPage: React.FC = () => {
         setBotInfo(response);
         setNotCon(false)
       } catch (error) {
-        // eslint-disable-next-line no-console
-        // console.error(`error ${error}`)
         const apiError = error as ApiError;
         addNotification(apiError.message, 'error', 6000);
         setNotCon(true)

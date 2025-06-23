@@ -10,11 +10,11 @@ import { updateBot } from '../../../shared/api/apiBot.ts';
 import { addNotification } from '../../../shared/store/use-notification-store.ts';
 import type { ApiError } from '../../../shared/api/errorHandler.ts';
 import { useNavigate } from 'react-router-dom';
-import type { BotCardInfo } from '../../../shared/types/apiTypes.ts';
+import type { BotCardInfoType } from '../../../shared/types/apiTypes.ts';
 
 
 interface BotInfoCardProps {
-  bot: BotCardInfo;
+  bot: BotCardInfoType;
 }
 
 export const BotInfoCard: React.FC<BotInfoCardProps> = ({ bot }) => {
@@ -22,10 +22,12 @@ export const BotInfoCard: React.FC<BotInfoCardProps> = ({ bot }) => {
   const [botToDelete, setBotToDelete] = React.useState<boolean>(false);
   const navigate = useNavigate();
   const { register, handleSubmit, reset,
-    formState: { errors, isDirty, isValid } } = useForm<BotCardInfo>({
+    formState: { errors, isDirty, isValid } } = useForm<BotCardInfoType>({
       defaultValues: bot,
       mode: 'onChange',
     });
+
+  // console.log(bot)
 
   const handleEdit = () => {
     reset(bot);
@@ -38,6 +40,8 @@ export const BotInfoCard: React.FC<BotInfoCardProps> = ({ bot }) => {
   };
 
   const handleDelete = async (id: number) => {
+    if (!id) return;
+
     try {
       // await deleteBot(Number(id));
       addNotification('Бот успешно удален', 'success', 3000);
@@ -54,15 +58,15 @@ export const BotInfoCard: React.FC<BotInfoCardProps> = ({ bot }) => {
     setBotToDelete(true);
   };
 
-  const onSubmit = async (data: BotCardInfo) => {
+  const onSubmit = async (data: BotCardInfoType) => {
     try {
-      await updateBot(bot.botId, data); // можно передавать только изменённые поля, если нужно
+      await updateBot(bot.id, data); // можно передавать только изменённые поля, если нужно
       setIsEditing(false);
       reset(data);
 
     } catch (error) {
       // обработка ошибки
-      console.error('Ошибка обновления бота:', error);
+      // console.error('Ошибка обновления бота:', error);
     }
   };
 
@@ -72,13 +76,13 @@ export const BotInfoCard: React.FC<BotInfoCardProps> = ({ bot }) => {
         <Typography variant="h4">{bot.name}</Typography>
         <Chip
           sx={{ pointerEvents: 'none' }}
-          label={bot.isActive ? 'Online' : 'Offline'}
-          color={bot.isActive ? 'success' : 'error'}
-          icon={bot.isActive ? <CheckCircle /> : <Cancel />}
+          label={bot.isOnline ? 'Online' : 'Offline'}
+          color={bot.isOnline ? 'success' : 'error'}
+          icon={bot.isOnline ? <CheckCircle /> : <Cancel />}
         />
       </Box>
 
-      <Typography variant="body1" sx={{ mt: 2 }}><strong>ID:</strong> {bot.botId}</Typography>
+      <Typography variant="body1" sx={{ mt: 2 }}><strong>ID:</strong> {bot.id}</Typography>
 
       <Typography variant="body1" sx={{ mt: 2 }}><strong>Token:</strong></Typography>
       <Typography sx={{ fontFamily: 'monospace' }}>{`${bot.token.substring(0, 10)}...`}</Typography>
@@ -116,7 +120,7 @@ export const BotInfoCard: React.FC<BotInfoCardProps> = ({ bot }) => {
             Отмена
           </Button>
           <Button
-            onClick={() => handleDelete(bot.botId)}
+            onClick={() => handleDelete(bot.id)}
             color="error"
           >
             Удалить
@@ -145,13 +149,13 @@ export const BotInfoCard: React.FC<BotInfoCardProps> = ({ bot }) => {
           sx={{ mr: 2 }}
         />
         <Chip
-          label={bot.isActive ? 'Online' : 'Offline'}
-          color={bot.isActive ? 'success' : 'error'}
-          icon={bot.isActive ? <CheckCircle /> : <Cancel />}
+          label={bot.isOnline ? 'Online' : 'Offline'}
+          color={bot.isOnline ? 'success' : 'error'}
+          icon={bot.isOnline ? <CheckCircle /> : <Cancel />}
         />
       </Box>
 
-      <Typography variant="body1" sx={{ mt: 2 }}><strong>ID:</strong> {bot.botId}</Typography>
+      <Typography variant="body1" sx={{ mt: 2 }}><strong>ID:</strong> {bot.id}</Typography>
 
       <TextField
         {...register('token', { required: 'Токен обязателен' })}

@@ -1,16 +1,52 @@
 {
   "bots": [
     {
-      "id": "1",
+      "id": "5",
       "name": "HR Bot",
       "token": "123456:ABC-DEF1234ghIkl-zyx57W2v1u123ew11",
       "receiver": "WEBHOOK",
-      "chatId": 123456789,
       "createdAt": "2024-05-01T12:34:56.000Z",
       "isOnline": true,
       "newMessagesCount": 2
+    },
+    {
+      "id": "2",
+      "name": "Support Bot",
+      "token": "222222:SUP-PORT1234ghIkl-zyx57W2v1u123ew22",
+      "receiver": "LONGPOLLING",
+      "createdAt": "2024-05-02T09:20:00.000Z",
+      "isOnline": false,
+      "newMessagesCount": 5
+    },
+    {
+      "id": "3",
+      "name": "Sales Bot",
+      "token": "333333:SALE-BOT1234ghIkl-zyx57W2v1u123ew33",
+      "receiver": "WEBHOOK",
+      "createdAt": "2024-05-03T15:10:00.000Z",
+      "isOnline": true,
+      "newMessagesCount": 0
+    },
+    {
+      "id": "4",
+      "name": "DevOps Bot",
+      "token": "444444:DEV-OPS1234ghIkl-zyx57W2v1u123ew44",
+      "receiver": "LONGPOLLING",
+      "createdAt": "2024-05-04T18:45:00.000Z",
+      "isOnline": false,
+      "newMessagesCount": 1
+    },
+    {
+      "id": "5",
+      "name": "Marketing Bot",
+      "token": "555555:MARK-ET1234ghIkl-zyx57W2v1u123ew55",
+      "receiver": "WEBHOOK",
+      "createdAt": "2024-05-05T11:30:00.000Z",
+      "isOnline": true,
+      "newMessagesCount": 3
     }
   ],
+
   "questions": [
     {
       "id": "q1",
@@ -24,13 +60,64 @@
         "3-5 лет",
         "Более 5 лет"
       ]
+    },
+    {
+      "id": "q2",
+      "botId": "2",
+      "title": "Какой у вас вопрос по поддержке?",
+      "description": "Опишите вашу проблему.",
+      "helpMessage": "Будьте максимально подробны.",
+      "answers": [
+        "Техническая проблема",
+        "Вопрос по оплате",
+        "Другое"
+      ]
+    },
+    {
+      "id": "q3",
+      "botId": "3",
+      "title": "Вы интересуетесь нашими продуктами?",
+      "description": "Выберите интересующий продукт.",
+      "helpMessage": "Можно выбрать несколько.",
+      "answers": [
+        "Продукт A",
+        "Продукт B",
+        "Продукт C"
+      ]
+    },
+    {
+      "id": "q4",
+      "botId": "4",
+      "title": "Какой у вас опыт с DevOps?",
+      "description": "Опишите ваш опыт.",
+      "helpMessage": "Укажите стек технологий.",
+      "answers": [
+        "Нет опыта",
+        "1-2 года",
+        "3-5 лет",
+        "Более 5 лет"
+      ]
+    },
+    {
+      "id": "q5",
+      "botId": "5",
+      "title": "Какие маркетинговые инструменты вы используете?",
+      "description": "Выберите из списка.",
+      "helpMessage": "Можно выбрать несколько.",
+      "answers": [
+        "Google Ads",
+        "Facebook Ads",
+        "Email-маркетинг",
+        "SEO"
+      ]
     }
   ],
+
   "responses": [
     {
-      "questionId": "1",
+      "questionId": "q1",
       "botId": "1",
-      "title": "Как вас зовут?",
+      "title": "Какой у вас опыт работы?",
       "countResponse": 10,
       "newResponse": 4,
       "answers": [
@@ -38,51 +125,110 @@
           "id": "a1",
           "userId": "user_789",
           "username": "ivan_92",
-          "response": "Иван",
+          "response": "3-5 лет",
           "date": "2023-05-15 14:30"
         },
         {
           "id": "a2",
           "userId": "user_456",
           "username": "anna_s",
-          "response": "Анна",
+          "response": "1-3 года",
           "date": "2023-05-15 15:45"
-        },
+        }
+      ]
+      
+    },
+     {
+      "questionId": "q2",
+      "botId": "1",
+      "title": "Какой у вас опыт работы?",
+      "countResponse": 10,
+      "newResponse": 4,
+      "answers": [
         {
-          "id": "a5",
+          "id": "a1",
           "userId": "user_789",
           "username": "ivan_92",
-          "response": "Иван",
+          "response": "3-5 лет",
           "date": "2023-05-15 14:30"
+        },
+        {
+          "id": "a2",
+          "userId": "user_456",
+          "username": "anna_s",
+          "response": "1-3 года",
+          "date": "2023-05-15 15:45"
+        },               {
+          "id": "a3",
+          "userId": "user_456",
+          "username": "anna_s",
+          "response": "1-3 года",
+          "date": "2023-05-15 15:45"
+        }
+      ]
+      
+    },
+    {
+      "questionId": "q2",
+      "botId": "2",
+      "title": "Какой у вас вопрос по поддержке?",
+      "countResponse": 7,
+      "newResponse": 2,
+      "answers": [
+        {
+          "id": "b1",
+          "userId": "user_111",
+          "username": "support_guy",
+          "response": "Техническая проблема",
+          "date": "2023-05-16 10:00"
         }
       ]
     },
     {
-      "questionId": "1",
-      "botId": "1",
-      "title": "Как вас зовут?",
-      "countResponse": 3,
-      "newResponse": 5,
+      "questionId": "q3",
+      "botId": "3",
+      "title": "Вы интересуетесь нашими продуктами?",
+      "countResponse": 5,
+      "newResponse": 1,
       "answers": [
         {
-          "id": "a3",
-          "userId": "user_123",
-          "username": "petr_88",
-          "response": [
-            "React",
-            "TypeScript"
-          ],
-          "date": "2023-05-16 09:15"
-        },
+          "id": "c1",
+          "userId": "user_222",
+          "username": "salesman",
+          "response": ["Продукт A", "Продукт C"],
+          "date": "2023-05-17 12:00"
+        }
+      ]
+    },
+    {
+      "questionId": "q4",
+      "botId": "4",
+      "title": "Какой у вас опыт с DevOps?",
+      "countResponse": 3,
+      "newResponse": 1,
+      "answers": [
         {
-          "id": "a4",
-          "userId": "user_789",
-          "username": "ivan_92",
-          "response": [
-            "Vue",
-            "JavaScript"
-          ],
-          "date": "2023-05-16 10:20"
+          "id": "d1",
+          "userId": "user_333",
+          "username": "devops_pro",
+          "response": "Более 5 лет",
+          "date": "2023-05-18 09:30"
+        }
+      ]
+    },
+    {
+      "questionId": "q5",
+      "botId": "5",
+      "title": "Какие маркетинговые инструменты вы используете?",
+      "countResponse": 8,
+      "newResponse": 3,
+      "answers": [
+        {
+          "id": "e1",
+          "userId": "user_444",
+          "username": "marketer",
+          "response": ["Google Ads", "SEO"],
+          "date": "2023-05-19 11:15"
         }
       ]
     }

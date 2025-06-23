@@ -1,8 +1,9 @@
 import axios from 'axios';
 import { handleApiError } from './errorHandler.ts';
 
-const BOTS_API_URL = 'https://6842d197e1347494c31e0af7.mockapi.io';
+// const BOTS_API_URL = 'https://6842d197e1347494c31e0af7.mockapi.io';
 const AUTH_API_URL = 'https://6842d197e1347494c31e0af7.mockapi.io/auth';
+const BOTS_API_URL = 'http://localhost:3006';
 
 const commonConfig = {
   timeout: 10000,

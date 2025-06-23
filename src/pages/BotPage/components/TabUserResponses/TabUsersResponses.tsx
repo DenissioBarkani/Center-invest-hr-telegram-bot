@@ -6,6 +6,7 @@ import { useEffect, useState } from 'react';
 import ResponsesItem from './ResponsesItem.tsx';
 import type { Answers } from '../../../../shared/types/apiTypes.ts';
 import { getResponses } from '../../../../shared/api/apiBot.ts';
+import { useParams } from 'react-router-dom';
 
 // export interface QuestionWithAnswers {
 //   questionText: string;
@@ -73,15 +74,17 @@ import { getResponses } from '../../../../shared/api/apiBot.ts';
 
 const TabUsersResponses = () => {
   const [dataResponses, setDataResponses] = useState<Answers[]>([])
+  const { id } = useParams<{ id: string }>();
 
-  const fetchData = async () => {
-    const res = await getResponses(1)
+  const fetchData = async (idFetch: string) => {
+    const res = await getResponses(idFetch)
     setDataResponses(res)
   }
 
   useEffect(() => {
-    fetchData()
-  }, [])
+    if (!id) return;
+    fetchData(id)
+  }, [id])
 
   return (
     <Paper sx={{ p: 3, borderRadius: 2 }}>

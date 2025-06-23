@@ -1,18 +1,16 @@
-export interface Bot {
-  botId: string;
+export interface BotShortType {
+  id: string;
   name: string;
-  token: string;
-  createdAt: string;
   isOnline?: boolean;
   newMessagesCount: number;
 }
 
-export interface BotCardInfo {
-  botId: number;
+export interface BotCardInfoType {
+  id: number;
   name: string;
   token: string;
   description: string;
-  isActive: boolean;
+  isOnline: boolean;
   createdAt: string;
 }
 

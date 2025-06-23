@@ -21,6 +21,7 @@ import { deleteBot, getBots } from '../../../shared/api/apiBot.ts';
 import { type ApiError } from '../../../shared/api/errorHandler.ts';
 import { addNotification } from '../../../shared/store/use-notification-store.ts';
 import { MyDialog } from '../../../shared/ui/MyDialog.tsx';
+import type { BotShortType } from '../../../shared/types/apiTypes.ts';
 
 interface BotRowData {
   id: string;
@@ -37,8 +38,8 @@ const CustomTableRow: TableComponents<BotRowData>['TableRow'] = ({
 }) => {
   const navigate = useNavigate();
 
-  const handleBotClick = (id: string) => {
-    navigate(`/bots/${id}`);
+  const handleBotClick = (botId: string) => {
+    navigate(`/bots/${botId}`);
   };
 
   return (
@@ -47,7 +48,7 @@ const CustomTableRow: TableComponents<BotRowData>['TableRow'] = ({
       hover
       sx={{ cursor: 'pointer' }}
       // eslint-disable-next-line react/prop-types
-      onClick={() => handleBotClick(item.id)}
+      onClick={() => handleBotClick(item.botId)}
     />
   );
 };
@@ -73,14 +74,16 @@ const SkeletonRow = () => (
 );
 
 const RowContent = ({
+  index,
   row,
   onDeleteClick,
 }: {
+  index: number;
   row: BotRowData;
   onDeleteClick: (row: BotRowData) => void;
 }) => (
   <>
-    <TableCell align="left">{row.id}</TableCell>
+    <TableCell align="left">{index + 1}</TableCell>
     <TableCell align="left">{row.name}</TableCell>
     <TableCell align="center">
       <Chip
@@ -207,15 +210,15 @@ const ReactVirtualizedTable = () => {
   const fetchBots = async () => {
     setIsLoading(true);
     try {
-      const data = await getBots();
-      // const botsData: BotRowData[] = data.map((bot: any) => ({
-      //   id: bot.id,
-      //   botId: bot.id,
-      //   name: bot.name,
-      //   isOnline: bot.isOnline ?? false,
-      //   newMessagesCount: bot.newMessagesCount ?? 0,
-      // }));
-      setBots(data);
+      const response = await getBots();
+      const botsShort = response.map((bot: BotShortType) => ({
+        botId: bot.id,
+        name: bot.name,
+        isOnline: bot.isOnline,
+        newMessagesCount: bot.newMessagesCount,
+      }));
+      console.log(botsShort)
+      setBots(botsShort);
     } catch (error: unknown) {
       const apiError = error as ApiError;
       addNotification(apiError.message, 'error', 6000);
@@ -242,8 +245,8 @@ const ReactVirtualizedTable = () => {
   );
 
   const rowContent = React.useCallback(
-    (_index: number, botRow: BotRowData) => (
-      <RowContent row={botRow} onDeleteClick={handleDeleteClick} />
+    (index: number, botRow: BotRowData) => (
+      <RowContent index={index} row={botRow} onDeleteClick={handleDeleteClick} />
     ),
     []
   );

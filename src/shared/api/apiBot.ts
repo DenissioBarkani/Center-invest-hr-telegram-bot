@@ -8,8 +8,8 @@ export const getBots = async () => {
 };
 
 export const getBotInfo = async (botId: string) => {
-  const response = await apiBots.get(`/bots/${botId}/botinfo`);
-  return response.data[0];
+  const response = await apiBots.get(`/bots/${botId}`);
+  return response.data;
 };
 
 // поменять botData когда будет не фэйк api
@@ -62,7 +62,7 @@ export const deleteBot = async (botId: number) => {
 };
 
 
-export const getResponses = async (botId: number) => {
+export const getResponses = async (botId: string) => {
   const response = await axios.get(`http://localhost:3006/responses?botId=${botId}`);
   return response.data;
 };
