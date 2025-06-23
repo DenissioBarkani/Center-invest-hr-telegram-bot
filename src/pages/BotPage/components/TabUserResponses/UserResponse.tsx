@@ -10,14 +10,8 @@ import {
   Typography,
 } from '@mui/material';
 import React from 'react';
+import type { UserAnswer } from '../../../../shared/types/apiTypes';
 
-export interface UserAnswer {
-  id: string;
-  userId: string;
-  username: string;
-  response: string | string[];
-  date: string;
-}
 
 interface UserResponseProps {
   response: UserAnswer;

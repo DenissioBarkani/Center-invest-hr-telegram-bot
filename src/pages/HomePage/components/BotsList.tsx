@@ -3,11 +3,6 @@ import {
   Box,
   Button,
   Chip,
-  Dialog,
-  DialogActions,
-  DialogContent,
-  DialogContentText,
-  DialogTitle,
   Paper,
   Skeleton,
   Table,
@@ -25,43 +20,17 @@ import { TableVirtuoso } from 'react-virtuoso';
 import { deleteBot, getBots } from '../../../shared/api/apiBot.ts';
 import { type ApiError } from '../../../shared/api/errorHandler.ts';
 import { addNotification } from '../../../shared/store/use-notification-store.ts';
-import { MyDialog } from '../../../shared/ui/myDialog.tsx';
+import { MyDialog } from '../../../shared/ui/MyDialog.tsx';
 
-interface Data {
+interface BotRowData {
   id: string;
+  botId: string;
   name: string;
   isOnline: boolean;
   newMessagesCount: number;
 }
 
-//
-// {
-//   "id": "15",
-//   "name": "Hill",
-//   "isOnline": true,
-//   "newMessagesCount": 50,
-// }
-
-// const initialRows: Data[] = [
-//   { id: 1, name: 'Smith', isOnline: true, phone: '123-456-7890', newMessagesCount: 42 },
-//   { id: 2, name: 'Johnson', isOnline: true, phone: '234-567-8901', newMessagesCount: 17 },
-//   { id: 3, name: 'Brown', isOnline: true, phone: '345-678-9012', newMessagesCount: 0 },
-//   { id: 4, name: 'White', isOnline: true, phone: '456-789-0123', newMessagesCount: 5 },
-//   { id: 5, name: 'Davis', isOnline: true, phone: '567-890-1234', newMessagesCount: 73 },
-//   { id: 6, name: 'Clark', isOnline: true, phone: '678-901-2345', newMessagesCount: 31 },
-//   { id: 7, name: 'Lee', isOnline: true, phone: '789-012-3456', newMessagesCount: 56 },
-//   { id: 8, name: 'Taylor', isOnline: true, phone: '890-123-4567', newMessagesCount: 24 },
-//   { id: 9, name: 'Martin', isOnline: true, phone: '901-234-5678', newMessagesCount: 98 },
-//   { id: 10, name: 'Allen', isOnline: true, phone: '012-345-6789', newMessagesCount: 11 },
-//   { id: 11, name: 'Walker', isOnline: true, phone: '111-222-3333', newMessagesCount: 63 },
-//   { id: 12, name: 'Scott', isOnline: true, phone: '222-333-4444', newMessagesCount: 37 },
-//   { id: 13, name: 'Young', isOnline: true, phone: '333-444-5555', newMessagesCount: 80 },
-//   { id: 14, name: 'Green', isOnline: true, phone: '444-555-6666', newMessagesCount: 2 },
-//   { id: 15, name: 'Hill', isOnline: true, phone: '555-666-7777', newMessagesCount: 50 }
-// ];
-
-// Выносим компоненты из рендера
-const CustomTableRow: TableComponents<Data>['TableRow'] = ({
+const CustomTableRow: TableComponents<BotRowData>['TableRow'] = ({
   // eslint-disable-next-line react/prop-types
   item,
   ...props
@@ -107,8 +76,8 @@ const RowContent = ({
   row,
   onDeleteClick,
 }: {
-  row: Data;
-  onDeleteClick: (row: Data) => void;
+  row: BotRowData;
+  onDeleteClick: (row: BotRowData) => void;
 }) => (
   <>
     <TableCell align="left">{row.id}</TableCell>
@@ -204,21 +173,23 @@ const TableBodyComponent = React.forwardRef<HTMLTableSectionElement>(
 );
 
 const ReactVirtualizedTable = () => {
-  const [bots, setBots] = React.useState<Data[]>([]);
+  const [bots, setBots] = React.useState<BotRowData[]>([]);
   const [isLoading, setIsLoading] = React.useState<boolean>(true);
-  const [botToDelete, setBotToDelete] = React.useState<Data | null>(null);
+  const [botToDelete, setBotToDelete] = React.useState<BotRowData | null>(
+    null
+  );
   const [needsUpdate, setNeedsUpdate] = React.useState<boolean>(false);
 
-  const navigate = useNavigate();
+  // const navigate = useNavigate();
 
-  const handleBotClick = (id: string) => {
-    navigate(`/bots/${id}`);
-  };
+  // const handleBotClick = (id: string) => {
+  //   navigate(`/bots/${id}`);
+  // };
 
   const handleDelete = async (id: string) => {
     try {
       await deleteBot(Number(id));
-      setBots((prev) => prev.filter((bot) => bot.id !== id));
+      setBots((prev) => prev.filter((bot) => bot.botId !== id));
       setNeedsUpdate(true); // Устанавливаем флаг обновления
       addNotification('Бот успешно удален', 'success', 3000);
     } catch (error: unknown) {
@@ -229,7 +200,7 @@ const ReactVirtualizedTable = () => {
     }
   };
 
-  const handleDeleteClick = (row: Data) => {
+  const handleDeleteClick = (row: BotRowData) => {
     setBotToDelete(row);
   };
 
@@ -237,6 +208,13 @@ const ReactVirtualizedTable = () => {
     setIsLoading(true);
     try {
       const data = await getBots();
+      // const botsData: BotRowData[] = data.map((bot: any) => ({
+      //   id: bot.id,
+      //   botId: bot.id,
+      //   name: bot.name,
+      //   isOnline: bot.isOnline ?? false,
+      //   newMessagesCount: bot.newMessagesCount ?? 0,
+      // }));
       setBots(data);
     } catch (error: unknown) {
       const apiError = error as ApiError;
@@ -248,12 +226,11 @@ const ReactVirtualizedTable = () => {
   };
 
   React.useEffect(() => {
-
     fetchBots();
     setNeedsUpdate(false);
   }, [needsUpdate]);
 
-  const VirtuosoTableComponents: TableComponents<Data> = React.useMemo(
+  const VirtuosoTableComponents: TableComponents<BotRowData> = React.useMemo(
     () => ({
       Scroller: ScrollerComponent,
       Table: TableComponent,
@@ -265,8 +242,8 @@ const ReactVirtualizedTable = () => {
   );
 
   const rowContent = React.useCallback(
-    (_index: number, row: Data) => (
-      <RowContent row={row} onDeleteClick={handleDeleteClick} />
+    (_index: number, botRow: BotRowData) => (
+      <RowContent row={botRow} onDeleteClick={handleDeleteClick} />
     ),
     []
   );
@@ -275,6 +252,7 @@ const ReactVirtualizedTable = () => {
     () =>
       Array.from({ length: 10 }).map((_, index) => ({
         id: String(index),
+        botId: String(index),
         name: '',
         isOnline: false,
         newMessagesCount: 0,
@@ -284,6 +262,7 @@ const ReactVirtualizedTable = () => {
 
   const getItemContent = (loadingState: boolean) =>
     (loadingState ? () => <SkeletonRow /> : rowContent);
+
   return (
     <Paper style={{ height: 500, width: '100%' }}>
       {!isLoading && bots.length === 0 ? (
@@ -308,36 +287,14 @@ const ReactVirtualizedTable = () => {
       <MyDialog
         open={!!botToDelete}
         onClose={() => setBotToDelete(null)}
-        onConfirm={() => botToDelete && handleDelete(botToDelete.id)}
+        onConfirm={() => botToDelete && handleDelete(botToDelete.botId)}
         title="Удалить бота?"
-        description={botToDelete ? `Вы уверены, что хотите удалить бота ${botToDelete.name}?` : ''}
+        description={
+          botToDelete
+            ? `Вы уверены, что хотите удалить бота ${botToDelete.name}?`
+            : ''
+        }
       />
-
-      {/* <Dialog disableEnforceFocus
-        disableAutoFocus open={!!botToDelete} onClose={() => setBotToDelete(null)}>
-        <DialogTitle>Удалить бота?</DialogTitle>
-        <DialogContent>
-          <DialogContentText>
-            Вы уверены, что хотите удалить бота{' '}
-            <strong>{botToDelete?.name}</strong>?
-          </DialogContentText>
-        </DialogContent>
-        <DialogActions>
-          <Button
-            onClick={() => setBotToDelete(null)}
-            color="primary"
-          >
-            Отмена
-          </Button>
-          <Button
-            onClick={() =>
-              botToDelete && handleDelete(botToDelete.id)}
-            color="error"
-          >
-            Удалить
-          </Button>
-        </DialogActions>
-      </Dialog> */}
     </Paper>
   );
 };

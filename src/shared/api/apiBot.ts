@@ -1,4 +1,5 @@
 // import { apiErrorHandle } from './apiErrorHandler';
+import axios from 'axios';
 import { apiBots } from './config.ts';
 
 export const getBots = async () => {
@@ -59,3 +60,13 @@ export const deleteBot = async (botId: number) => {
   // const response = await apiBots.delete(`/bots/${botId}/botinfo`);
   // return response.data[0];
 };
+
+
+export const getResponses = async (botId: number) => {
+  const response = await axios.get(`http://localhost:3006/responses?botId=${botId}`);
+  return response.data;
+};
+
+// GET http://localhost:3006/responses?botId=1
+
+// GET http://localhost:3006/answers?questionId=q1onses

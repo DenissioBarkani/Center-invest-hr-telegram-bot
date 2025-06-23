@@ -1,17 +1,22 @@
 import { CommentOutlined, ExpandLess, ExpandMore } from '@mui/icons-material';
 import { Box, Collapse, IconButton, List, ListItem, ListItemText, Paper, Typography } from '@mui/material';
 import { useState } from 'react';
-import type { QuestionWithAnswers } from './TabUsersResponses.tsx';
+// import type { QuestionWithAnswers } from './TabUsersResponses.tsx';
 import { UserResponse } from './UserResponse.tsx';
+// import { getResponses } from '../../../../shared/api/apiBot.ts';
+import type { Answers, } from '../../../../shared/types/apiTypes.ts';
+// import type { Answer } from '../../../../shared/types/apiTypes.ts';
 
 interface QuestionWithAnswersProps {
-  usersResponse: QuestionWithAnswers;
+  usersResponse: Answers;
 }
 
 const ResponsesItem = ({ usersResponse }: QuestionWithAnswersProps) => {
   const [open, setOpen] = useState(false);
 
+
   const MAX_VISIBLE_ITEMS = 2; // Количество элементов до скролла
+
 
   return (
     <Paper sx={{ mb: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2, overflow: 'hidden' }}>
@@ -25,7 +30,7 @@ const ResponsesItem = ({ usersResponse }: QuestionWithAnswersProps) => {
         )}
       >
         <ListItemText
-          primary={usersResponse.questionText}
+          primary={usersResponse.title}
           disableTypography
           secondary={(
             <Box display="flex" alignItems="center" gap={0.5} mt={0.5}>
@@ -34,11 +39,11 @@ const ResponsesItem = ({ usersResponse }: QuestionWithAnswersProps) => {
                 {usersResponse.countResponse}
               </Typography>
 
-              {true && (
+              {usersResponse.newResponse > 0 && (
                 <>
                   <CommentOutlined sx={{ ml: 1 }} fontSize="small" color="info" />
                   <Typography variant="body2" component="span" color="info">
-                    0
+                    {usersResponse.newResponse}
                   </Typography>
                 </>
               )}

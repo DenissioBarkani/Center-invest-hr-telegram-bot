@@ -6,31 +6,26 @@ import {
 } from '@mui/material';
 import React, { useState } from 'react';
 import { useForm } from 'react-hook-form';
-import { deleteBot, updateBot } from '../../../shared/api/apiBot.ts';
+import { updateBot } from '../../../shared/api/apiBot.ts';
 import { addNotification } from '../../../shared/store/use-notification-store.ts';
 import type { ApiError } from '../../../shared/api/errorHandler.ts';
 import { useNavigate } from 'react-router-dom';
+import type { BotCardInfo } from '../../../shared/types/apiTypes.ts';
 
-export interface BotProps {
-  botId: number;
-  name: string;
-  token: string;
-  description: string;
-  isActive: boolean;
-}
 
 interface BotInfoCardProps {
-  bot: BotProps;
+  bot: BotCardInfo;
 }
 
 export const BotInfoCard: React.FC<BotInfoCardProps> = ({ bot }) => {
   const [isEditing, setIsEditing] = useState(false);
   const [botToDelete, setBotToDelete] = React.useState<boolean>(false);
   const navigate = useNavigate();
-  const { register, handleSubmit, reset, formState: { errors, isDirty, isValid } } = useForm<BotProps>({
-    defaultValues: bot,
-    mode: 'onChange',
-  });
+  const { register, handleSubmit, reset,
+    formState: { errors, isDirty, isValid } } = useForm<BotCardInfo>({
+      defaultValues: bot,
+      mode: 'onChange',
+    });
 
   const handleEdit = () => {
     reset(bot);
@@ -59,7 +54,7 @@ export const BotInfoCard: React.FC<BotInfoCardProps> = ({ bot }) => {
     setBotToDelete(true);
   };
 
-  const onSubmit = async (data: BotProps) => {
+  const onSubmit = async (data: BotCardInfo) => {
     try {
       await updateBot(bot.botId, data); // можно передавать только изменённые поля, если нужно
       setIsEditing(false);

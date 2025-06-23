@@ -1,15 +1,11 @@
 import { Delete, Edit } from '@mui/icons-material';
 import { Box, IconButton, List, Paper, Typography } from '@mui/material';
 import React from 'react';
+import type { QuestionType } from '../../../../shared/types/apiTypes';
 
-interface QuestionData {
-  id: number;
-  text: string;
-  answers: string[];
-}
 
 interface Props {
-  question: QuestionData;
+  question: QuestionType;
 }
 //  onClick={() => setEditingQuestion(question.id)}
 
@@ -42,7 +38,7 @@ export const Question: React.FC<Props> = ({ question }) => {
           flexWrap: 'wrap',
         }}
       >
-        {question.answers.map((answer, i) => (
+        {question.answers && question.answers.map((answer, i) => (
           <Typography
             key={`answer-${i + 1}`}
             component="li"

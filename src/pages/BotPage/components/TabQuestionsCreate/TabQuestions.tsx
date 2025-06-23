@@ -13,12 +13,16 @@ import {
 import axios from 'axios';
 import { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
+// import { Question } from './Question.tsx';
+import type { QuestionType } from '../../../../shared/types/apiTypes.ts';
 import { Question } from './Question.tsx';
 
-interface QuestionType {
-  id: number;
+interface newQuestion {
+  botId: string; // UUID
   text: string;
-  answers: string[];
+  // description?: string;
+  // helpMessage?: string;
+  answers?: string[];
 }
 
 interface FormValues {
@@ -28,12 +32,14 @@ interface FormValues {
 
 const mockQuestions: QuestionType[] = [
   {
-    id: 1,
+    id: '1',
+    botId: '1',
     text: 'Как вас зовут?',
     answers: ['Иван', 'Петр', 'Мария'],
   },
   {
-    id: 2,
+    id: '2',
+    botId: '1',
     text: 'Сколько вам лет?',
     answers: ['До 18', '18-25', '26-35', 'Старше 35'],
   },
@@ -67,10 +73,10 @@ const TabQuestions = () => {
   const fetchData = async () => {
     setIsLoading(true);
     try {
-      const response = await axios.get(
-        'https://6842d197e1347494c31e0af7.mockapi.io/bots/botinfo'
-      );
-      console.log(response);
+      // const response = await axios.get(
+      //   'https://6842d197e1347494c31e0af7.mockapi.io/bots/botinfo'
+      // );
+      // console.log(response);
       // if (response.status < 200 || response.status >= 300) {
       //     throw new Error(`HTTP error! status: ${response.status}`);
       // }
@@ -107,13 +113,13 @@ const TabQuestions = () => {
       return;
     }
 
-    const newQuestion: QuestionType = {
-      id: Date.now(),
+    const newQuestion: newQuestion = {
+      botId: '1',
       text: data.questionText.trim(),
       answers: data.answers.map((a) => a.value.trim()),
     };
 
-    setQuestions((prev) => [newQuestion, ...prev]);
+    // setQuestions((prev) => [newQuestion, ...prev]);
     reset();
   };
 
