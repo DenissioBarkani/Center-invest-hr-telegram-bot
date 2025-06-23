@@ -20,14 +20,17 @@ const ResponsesItem = ({ usersResponse }: QuestionWithAnswersProps) => {
 
   return (
     <Paper sx={{ mb: 2, border: '1px solid', borderColor: 'divider', borderRadius: 2, overflow: 'hidden' }}>
+
       <ListItem
         sx={{ bgcolor: 'action.hover', cursor: 'pointer', '&:hover': { bgcolor: 'action.selected' } }}
         onClick={() => setOpen(!open)}
-        secondaryAction={(
-          <IconButton edge="end" onClick={() => setOpen(!open)}>
-            {open ? <ExpandLess /> : <ExpandMore />}
-          </IconButton>
-        )}
+        secondaryAction={
+          usersResponse.answers.length > 0 ? (
+            <IconButton edge="end" onClick={() => setOpen(!open)}>
+              {open ? <ExpandLess /> : <ExpandMore />}
+            </IconButton>
+          ) : null
+        }
       >
         <ListItemText
           primary={usersResponse.title}

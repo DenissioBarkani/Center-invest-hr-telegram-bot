@@ -12,11 +12,11 @@ import { useParams, useSearchParams } from 'react-router-dom';
 import { getBotInfo } from '../../shared/api/apiBot.ts';
 import type { ApiError } from '../../shared/api/errorHandler.ts';
 import { addNotification } from '../../shared/store/use-notification-store.ts';
+import type { BotCardInfoType } from '../../shared/types/apiTypes.ts';
 import { Header } from '../../shared/ui/Header.tsx';
 import { BotInfoCard } from './components/BotInfoCard.tsx';
 import TabQuestions from './components/TabQuestionsCreate/TabQuestions.tsx';
 import TabUsersResponses from './components/TabUserResponses/TabUsersResponses.tsx';
-import type { BotCardInfoType } from '../../shared/types/apiTypes.ts';
 
 const BotPage: React.FC = () => {
   const [activeTab, setActiveTab] = useState(0);
@@ -26,7 +26,7 @@ const BotPage: React.FC = () => {
 
   const { id } = useParams<{ id: string }>();
   const [searchParams, setSearchParams] = useSearchParams();
-  const [notCon, setNotCon] = useState(false)
+  const [notCon, setNotCon] = useState(false);
 
   // Определяем активную вкладку из URL при монтировании
   useEffect(() => {
@@ -45,50 +45,6 @@ const BotPage: React.FC = () => {
     );
   };
 
-  // useEffect(() => {
-  //   if (!id) return;
-  //   const fetchData = async () => {
-  //     setLoading(true);
-  //     setErrorState(null);
-
-  //     try {
-  //       const response = await axios.get(
-  //         `https://6842d197e1347494c31e0af7.mockapi.io/bots/${id}/botinfo`
-  //       );
-  //       if (response.status < 200 || response.status >= 300) {
-  //         throw new Error(`HTTP error! status: ${response.status}`);
-  //       }
-  //       setBotInfo(response.data[0]);
-  //     } catch (error) {
-  //       if (axios.isAxiosError(error)) {
-  //         if (error.response) {
-  //           // eslint-disable-next-line no-console
-  //           console.error('Server error:', error.response.status);
-  //           setErrorState(`Ошибка сервера: ${error.response.status}`);
-  //         } else if (error.request) {
-  //           // eslint-disable-next-line no-console
-  //           console.error('Network error:', error.message);
-  //           setErrorState('Ошибка сети: нет ответа от сервера');
-  //         } else {
-  //           // eslint-disable-next-line no-console
-  //           console.error('Request error:', error.message);
-  //           setErrorState(`Ошибка запроса: ${error.message}`);
-  //         }
-  //       } else {
-  //         setErrorState(
-  //           `Произошла ошибка: ${error instanceof Error
-  //             ? error.message
-  //             : 'Неизвестная ошибка'
-  //           }`
-  //         );
-  //       }
-  //     } finally {
-  //       setLoading(false);
-  //     }
-  //   };
-  //   fetchData();
-  // }, [id]);
-
   useEffect(() => {
     if (!id) return;
     const fetchData = async () => {
@@ -96,19 +52,36 @@ const BotPage: React.FC = () => {
       setErrorState(null);
 
       try {
-        const response = await getBotInfo(id)
+        const response = await getBotInfo(id);
         setBotInfo(response);
-        setNotCon(false)
+        setNotCon(false);
       } catch (error) {
         const apiError = error as ApiError;
         addNotification(apiError.message, 'error', 6000);
-        setNotCon(true)
+        setNotCon(true);
       } finally {
         setLoading(false);
       }
     };
     fetchData();
   }, [id]);
+
+  // Если нет id — сразу показываем ошибку
+  if (!id) {
+    return (
+      <Box
+        display="flex"
+        justifyContent="center"
+        alignItems="center"
+        minHeight="100vh"
+        width="100%"
+      >
+        <Typography variant="h6" sx={{ color: 'red' }}>
+          Не передан идентификатор бота
+        </Typography>
+      </Box>
+    );
+  }
 
   if (loading) {
     return (
@@ -130,10 +103,10 @@ const BotPage: React.FC = () => {
         display="flex"
         justifyContent="center"
         alignItems="center"
-        minHeight="100vh" // или "100%" если родитель растянут
+        minHeight="100vh"
         width="100%"
       >
-        <Typography variant='h6' sx={{ color: 'red' }}>
+        <Typography variant="h6" sx={{ color: 'red' }}>
           Данные бота не найдены
         </Typography>
       </Box>
@@ -150,10 +123,17 @@ const BotPage: React.FC = () => {
               <CircularProgress />
             </Box>
           )}
-          {!loading && errorState && <Typography color="error">{errorState}</Typography>}
-          {!loading && !errorState && botInfo && <BotInfoCard bot={botInfo} />}
-          {!loading && !errorState && !botInfo
-            && <Typography variant='h6' sx={{ py: 2, color: 'red' }}>Данные бота не найдены</Typography>}
+          {!loading && errorState && (
+            <Typography color="error">{errorState}</Typography>
+          )}
+          {!loading && !errorState && botInfo && (
+            <BotInfoCard bot={botInfo} />
+          )}
+          {!loading && !errorState && !botInfo && (
+            <Typography variant="h6" sx={{ py: 2, color: 'red' }}>
+              Данные бота не найдены
+            </Typography>
+          )}
         </Paper>
 
         <Tabs value={activeTab} onChange={handleTabChange}>
@@ -163,8 +143,8 @@ const BotPage: React.FC = () => {
 
         <Divider sx={{ mb: 3 }} />
 
-        {activeTab === 0 && <TabQuestions />}
-        {activeTab === 1 && <TabUsersResponses />}
+        {activeTab === 0 && <TabQuestions botId={id} />}
+        {activeTab === 1 && <TabUsersResponses botId={id} />}
       </Box>
     </Box>
   );

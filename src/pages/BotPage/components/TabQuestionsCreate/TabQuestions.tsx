@@ -1,3 +1,4 @@
+/* eslint-disable no-console */
 import { Add, Delete } from '@mui/icons-material';
 import {
   Box,
@@ -11,7 +12,7 @@ import {
   Typography,
 } from '@mui/material';
 import axios from 'axios';
-import { useEffect, useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 // import { Question } from './Question.tsx';
 import type { QuestionType } from '../../../../shared/types/apiTypes.ts';
@@ -45,11 +46,14 @@ const mockQuestions: QuestionType[] = [
   },
 ];
 
-const TabQuestions = () => {
+interface TabQuestionsProps {
+  botId: string;
+}
+
+const TabQuestions: React.FC<TabQuestionsProps> = ({ botId }) => {
   const [dataQuestions, setQuestions] =
     useState<QuestionType[]>(mockQuestions);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-  // const [update, setUpdate] = useState<boolean>(false)
 
   const {
     register,
@@ -70,17 +74,18 @@ const TabQuestions = () => {
     name: 'answers',
   });
 
-  const fetchData = async () => {
+  const fetchData = async (botIdFetch: string) => {
     setIsLoading(true);
     try {
-      // const response = await axios.get(
-      //   'https://6842d197e1347494c31e0af7.mockapi.io/bots/botinfo'
-      // );
-      // console.log(response);
-      // if (response.status < 200 || response.status >= 300) {
-      //     throw new Error(`HTTP error! status: ${response.status}`);
-      // }
-      // setBotInfo(response.data[0]);
+      const response = await axios.get(
+        `http://localhost:3006/questions?botId=${botIdFetch}`
+      );
+      console.log(response);
+      if (response.status < 200 || response.status >= 300) {
+        throw new Error(`HTTP error! status: ${response.status}`);
+      }
+      console.log(response);
+      setQuestions(response.data);
     } catch (error) {
       if (axios.isAxiosError(error)) {
         if (error.response) {
@@ -104,23 +109,32 @@ const TabQuestions = () => {
   };
 
   useEffect(() => {
-    // fetchData();
-  }, []);
+    fetchData(botId);
+  }, [botId]);
 
-  const onSubmit = (data: FormValues) => {
+  const onSubmit = async (data: FormValues) => {
     if (data.answers.some((a) => !a.value.trim())) {
       alert('Все ответы должны быть заполнены!');
       return;
     }
 
     const newQuestion: newQuestion = {
-      botId: '1',
+      botId,
       text: data.questionText.trim(),
       answers: data.answers.map((a) => a.value.trim()),
     };
 
-    // setQuestions((prev) => [newQuestion, ...prev]);
-    reset();
+    setIsLoading(true);
+    try {
+      await axios.post('http://localhost:3006/questions', newQuestion);
+      await fetchData(botId);
+      reset();
+    } catch (error) {
+      alert('Ошибка при создании вопроса!');
+      console.error(error);
+    } finally {
+      setIsLoading(false);
+    }
   };
 
   return (
@@ -202,12 +216,15 @@ const TabQuestions = () => {
             <CircularProgress />
           </Box>
         )}
-        {!isLoading && (!dataQuestions || dataQuestions.length === 0) && (
-          <Box sx={{ p: 2 }}>Нет вопросов</Box>
-        )}
-        {!isLoading && dataQuestions?.length > 0 && dataQuestions.map((question) => (
-          <Question key={question.id} question={question} />
-        ))}
+        {!isLoading &&
+          (!dataQuestions || dataQuestions.length === 0) && (
+            <Box sx={{ p: 2 }}>Нет вопросов</Box>
+          )}
+        {!isLoading &&
+          dataQuestions?.length > 0 &&
+          dataQuestions.map((question) => (
+            <Question key={question.id} question={question} />
+          ))}
       </List>
     </Paper>
   );
