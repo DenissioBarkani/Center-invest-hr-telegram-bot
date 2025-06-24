@@ -1,15 +1,22 @@
 import { Delete, Edit } from '@mui/icons-material';
-import { Box, IconButton, List, Paper, Typography } from '@mui/material';
+import {
+  Box,
+  CircularProgress,
+  IconButton,
+  List,
+  Paper,
+  Typography,
+} from '@mui/material';
 import React from 'react';
 import type { QuestionType } from '../../../../shared/types/apiTypes';
 
-
 interface Props {
   question: QuestionType;
+  onDelete: (id: string) => void;
+  loading?: boolean;
 }
-//  onClick={() => setEditingQuestion(question.id)}
 
-export const Question: React.FC<Props> = ({ question }) => {
+export const Question: React.FC<Props> = ({ question, onDelete, loading }) => {
   return (
     <Paper sx={{ p: 2, mb: 2 }}>
       <Box display="flex" justifyContent="space-between">
@@ -21,8 +28,15 @@ export const Question: React.FC<Props> = ({ question }) => {
           <IconButton>
             <Edit color="primary" />
           </IconButton>
-          <IconButton>
-            <Delete color="error" />
+          <IconButton
+            onClick={() => onDelete(question.id)}
+            disabled={loading}
+          >
+            {loading ? (
+              <CircularProgress size={24} color="error" />
+            ) : (
+              <Delete color="error" />
+            )}
           </IconButton>
         </Box>
       </Box>
@@ -38,16 +52,17 @@ export const Question: React.FC<Props> = ({ question }) => {
           flexWrap: 'wrap',
         }}
       >
-        {question.answers && question.answers.map((answer, i) => (
-          <Typography
-            key={`answer-${i + 1}`}
-            component="li"
-            variant="subtitle2"
-            sx={{ mt: 0.5 }}
-          >
-            {i + 1}. {answer}
-          </Typography>
-        ))}
+        {question.answers &&
+          question.answers.map((answer, i) => (
+            <Typography
+              key={`answer-${i + 1}`}
+              component="li"
+              variant="subtitle2"
+              sx={{ mt: 0.5 }}
+            >
+              {i + 1}. {answer}
+            </Typography>
+          ))}
       </List>
     </Paper>
   );

@@ -48,32 +48,6 @@
   ],
   "questions": [
     {
-      "id": "q1",
-      "botId": "1",
-      "title": "Какой у вас опыт работы?",
-      "description": "Опишите ваш опыт работы в IT.",
-      "helpMessage": "Пожалуйста, укажите только релевантный опыт.",
-      "answers": [
-        "Менее года",
-        "1-3 года",
-        "3-5 лет",
-        "Более 5 лет"
-      ]
-    },
-    {
-      "id": "q2",
-      "botId": "1",
-      "title": "ААААА",
-      "description": "Опишите ваш опыт работы в IT.",
-      "helpMessage": "Пожалуйста, укажите только релевантный опыт.",
-      "answers": [
-        "Менее года",
-        "1-3 года",
-        "3-5 лет",
-        "Более 5 лет"
-      ]
-    },
-    {
       "id": "q2",
       "botId": "2",
       "title": "Какой у вас вопрос по поддержке?",
@@ -124,36 +98,36 @@
       ]
     },
     {
-      "id": "7fdb",
+      "id": "8305",
       "botId": "1",
-      "text": "3123123",
+      "text": "ыаыыа",
       "answers": [
-        "3123",
-        "3132"
+        "ыаы",
+        "аываыаыа"
       ]
     },
     {
-      "id": "1e43",
+      "id": "fbfe",
       "botId": "1",
-      "text": "1323123",
+      "text": "gdfgdf",
       "answers": [
-        "312312",
-        "3113"
+        "gdfg",
+        "dfgdfg"
       ]
     },
     {
-      "id": "fc2b",
+      "id": "7133",
       "botId": "1",
-      "text": "32113",
+      "text": "gdgd",
       "answers": [
-        "3123",
-        "31313"
+        "gdgdg",
+        "dgd"
       ]
     }
   ],
   "responses": [
     {
-      "questionId": "q1",
+      "questionId": null,
       "botId": "1",
       "title": "Какой у вас опыт работы?",
       "countResponse": 10,
@@ -176,7 +150,7 @@
       ]
     },
     {
-      "questionId": "q2",
+      "questionId": null,
       "botId": "1",
       "title": "Какой у вас опыт работы?",
       "countResponse": 10,
@@ -206,7 +180,7 @@
       ]
     },
     {
-      "questionId": "q2",
+      "questionId": null,
       "botId": "1",
       "title": "Какой у вас опыт работы?",
       "countResponse": 0,
@@ -214,7 +188,7 @@
       "answers": []
     },
     {
-      "questionId": "q2",
+      "questionId": null,
       "botId": "2",
       "title": "Какой у вас вопрос по поддержке?",
       "countResponse": 7,

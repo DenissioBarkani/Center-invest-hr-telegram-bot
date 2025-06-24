@@ -19,10 +19,8 @@ import type { QuestionType } from '../../../../shared/types/apiTypes.ts';
 import { Question } from './Question.tsx';
 
 interface newQuestion {
-  botId: string; // UUID
+  botId: string;
   text: string;
-  // description?: string;
-  // helpMessage?: string;
   answers?: string[];
 }
 
@@ -31,30 +29,17 @@ interface FormValues {
   answers: { value: string }[];
 }
 
-const mockQuestions: QuestionType[] = [
-  {
-    id: '1',
-    botId: '1',
-    text: 'Как вас зовут?',
-    answers: ['Иван', 'Петр', 'Мария'],
-  },
-  {
-    id: '2',
-    botId: '1',
-    text: 'Сколько вам лет?',
-    answers: ['До 18', '18-25', '26-35', 'Старше 35'],
-  },
-];
-
 interface TabQuestionsProps {
   botId: string;
 }
 
 const TabQuestions: React.FC<TabQuestionsProps> = ({ botId }) => {
-  const [dataQuestions, setQuestions] =
-    useState<QuestionType[]>(mockQuestions);
+  const [dataQuestions, setQuestions] = useState<QuestionType[]>([]);
   const [isLoading, setIsLoading] = useState<boolean>(false);
-
+  const [questionLoadingId, setQuestionLoadingId] = useState<string | null>(
+    null
+  );
+  const [isCreating, setIsCreating] = useState<boolean>(false);
   const {
     register,
     control,
@@ -124,16 +109,32 @@ const TabQuestions: React.FC<TabQuestionsProps> = ({ botId }) => {
       answers: data.answers.map((a) => a.value.trim()),
     };
 
-    setIsLoading(true);
+    setIsCreating(true);
     try {
-      await axios.post('http://localhost:3006/questions', newQuestion);
-      await fetchData(botId);
+      const response = await axios.post(
+        'http://localhost:3006/questions',
+        newQuestion
+      );
+      setQuestions((prev) => [response.data, ...prev]);
       reset();
     } catch (error) {
       alert('Ошибка при создании вопроса!');
-      console.error(error);
     } finally {
-      setIsLoading(false);
+      setIsCreating(false);
+    }
+  };
+
+  const handleDeleteQuestion = async (id: string) => {
+    if (!window.confirm('Удалить вопрос?')) return;
+    setQuestionLoadingId(id);
+    setQuestions((prev) => prev.filter((q) => q.id !== id));
+    try {
+      await axios.delete(`http://localhost:3006/questions/${id}`);
+    } catch (e) {
+      alert('Ошибка при удалении!');
+      fetchData(botId);
+    } finally {
+      setQuestionLoadingId(null);
     }
   };
 
@@ -200,7 +201,14 @@ const TabQuestions: React.FC<TabQuestionsProps> = ({ botId }) => {
           Добавить вариант
         </Button>
 
-        <Button variant="contained" type="submit" disabled={!isValid}>
+        <Button
+          variant="contained"
+          type="submit"
+          disabled={!isValid || isCreating}
+        >
+          {isCreating ? (
+            <CircularProgress size={20} sx={{ mr: 1 }} />
+          ) : null}
           Создать вопрос
         </Button>
       </Box>
@@ -218,12 +226,17 @@ const TabQuestions: React.FC<TabQuestionsProps> = ({ botId }) => {
         )}
         {!isLoading &&
           (!dataQuestions || dataQuestions.length === 0) && (
-            <Box sx={{ p: 2 }}>Нет вопросов</Box>
-          )}
+          <Box sx={{ p: 2 }}>Нет вопросов</Box>
+        )}
         {!isLoading &&
           dataQuestions?.length > 0 &&
           dataQuestions.map((question) => (
-            <Question key={question.id} question={question} />
+            <Question
+              key={question.id}
+              question={question}
+              onDelete={handleDeleteQuestion}
+              loading={questionLoadingId === question.id}
+            />
           ))}
       </List>
     </Paper>

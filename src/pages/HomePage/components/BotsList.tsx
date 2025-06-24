@@ -20,8 +20,8 @@ import { TableVirtuoso } from 'react-virtuoso';
 import { deleteBot, getBots } from '../../../shared/api/apiBot.ts';
 import { type ApiError } from '../../../shared/api/errorHandler.ts';
 import { addNotification } from '../../../shared/store/use-notification-store.ts';
-import { MyDialog } from '../../../shared/ui/MyDialog.tsx';
 import type { BotShortType } from '../../../shared/types/apiTypes.ts';
+import { MyDialog } from '../../../shared/ui/MyDialog.tsx';
 
 interface BotRowData {
   id: string;
@@ -55,19 +55,19 @@ const CustomTableRow: TableComponents<BotRowData>['TableRow'] = ({
 
 const SkeletonRow = () => (
   <>
-    <TableCell>
+    <TableCell sx={{ pointerEvents: 'none' }}>
       <Skeleton variant="text" height={30} />
     </TableCell>
-    <TableCell>
+    <TableCell sx={{ pointerEvents: 'none', }}>
       <Skeleton variant="text" height={30} width="80%" />
     </TableCell>
-    <TableCell>
+    <TableCell sx={{ pointerEvents: 'none', }}>
       <Skeleton variant="rectangular" width="100%" height={30} />
     </TableCell>
-    <TableCell>
+    <TableCell sx={{ pointerEvents: 'none', }}>
       <Skeleton variant="rectangular" width="100%" height={30} />
     </TableCell>
-    <TableCell>
+    <TableCell sx={{ pointerEvents: 'none', }}>
       <Skeleton variant="rectangular" width="100%" height={30} />
     </TableCell>
   </>
@@ -217,7 +217,7 @@ const ReactVirtualizedTable = () => {
         isOnline: bot.isOnline,
         newMessagesCount: bot.newMessagesCount,
       }));
-      console.log(botsShort)
+      console.log(botsShort);
       setBots(botsShort);
     } catch (error: unknown) {
       const apiError = error as ApiError;
@@ -246,14 +246,18 @@ const ReactVirtualizedTable = () => {
 
   const rowContent = React.useCallback(
     (index: number, botRow: BotRowData) => (
-      <RowContent index={index} row={botRow} onDeleteClick={handleDeleteClick} />
+      <RowContent
+        index={index}
+        row={botRow}
+        onDeleteClick={handleDeleteClick}
+      />
     ),
     []
   );
 
   const skeletonRows = React.useMemo(
     () =>
-      Array.from({ length: 10 }).map((_, index) => ({
+      Array.from({ length: 7 }).map((_, index) => ({
         id: String(index),
         botId: String(index),
         name: '',
@@ -267,7 +271,7 @@ const ReactVirtualizedTable = () => {
     (loadingState ? () => <SkeletonRow /> : rowContent);
 
   return (
-    <Paper style={{ height: 500, width: '100%' }}>
+    <Paper style={{ height: 500, width: '100%', position: 'relative' }}>
       {!isLoading && bots.length === 0 ? (
         <Box
           display="flex"
@@ -285,6 +289,19 @@ const ReactVirtualizedTable = () => {
           components={VirtuosoTableComponents}
           fixedHeaderContent={fixedHeaderContent}
           itemContent={getItemContent(isLoading)}
+        />
+      )}
+      {isLoading && (
+        <Box
+          sx={{
+            position: 'absolute',
+            top: 0,
+            left: 0,
+            width: '100%',
+            height: '100%',
+            bgcolor: 'rgba(255,255,255,0.0)',
+            zIndex: 10,
+          }}
         />
       )}
       <MyDialog
