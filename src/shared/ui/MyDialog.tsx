@@ -21,7 +21,7 @@ export const MyDialog: React.FC<MyDialogProps> = ({
   <Dialog disableEnforceFocus
     disableAutoFocus
     open={open} onClose={() => onClose}>
-    <DialogTitle>{title}</DialogTitle>
+    <DialogTitle sx={{ minWidth: 250 }}>{title}</DialogTitle>
     {description && (
       <DialogContent>
         <DialogContentText>{description}</DialogContentText>

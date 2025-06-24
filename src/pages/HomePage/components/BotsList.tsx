@@ -58,16 +58,16 @@ const SkeletonRow = () => (
     <TableCell sx={{ pointerEvents: 'none' }}>
       <Skeleton variant="text" height={30} />
     </TableCell>
-    <TableCell sx={{ pointerEvents: 'none', }}>
+    <TableCell sx={{ pointerEvents: 'none' }}>
       <Skeleton variant="text" height={30} width="80%" />
     </TableCell>
-    <TableCell sx={{ pointerEvents: 'none', }}>
+    <TableCell sx={{ pointerEvents: 'none' }}>
       <Skeleton variant="rectangular" width="100%" height={30} />
     </TableCell>
-    <TableCell sx={{ pointerEvents: 'none', }}>
+    <TableCell sx={{ pointerEvents: 'none' }}>
       <Skeleton variant="rectangular" width="100%" height={30} />
     </TableCell>
-    <TableCell sx={{ pointerEvents: 'none', }}>
+    <TableCell sx={{ pointerEvents: 'none' }}>
       <Skeleton variant="rectangular" width="100%" height={30} />
     </TableCell>
   </>

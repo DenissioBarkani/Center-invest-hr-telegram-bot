@@ -28,19 +28,6 @@ const AddBot: React.FC = () => {
         newMessagesCount: 0,
         createdAt: Date.now(),
       };
-
-
-      // await axios.post(
-      //     "https://6842d197e1347494c31e0af7.mockapi.io/bots",
-      //     payload,
-      //     {
-      //         timeout: 5000,
-      //         headers: {
-      //             'Content-Type': 'application/json',
-      //         }
-      //     }
-      // );
-
       createNewBot(payload);
 
       addNotification('Бот успешно добавлен!', 'success', 6000);

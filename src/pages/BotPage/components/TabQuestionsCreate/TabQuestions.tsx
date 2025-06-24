@@ -1,3 +1,4 @@
+/* eslint-disable indent */
 /* eslint-disable no-console */
 import { Add, Delete } from '@mui/icons-material';
 import {
@@ -15,10 +16,16 @@ import axios from 'axios';
 import React, { useEffect, useState } from 'react';
 import { useFieldArray, useForm } from 'react-hook-form';
 // import { Question } from './Question.tsx';
+import {
+  createQuestions,
+  getQuestions,
+} from '../../../../shared/api/apiBot.ts';
+import { addNotification } from '../../../../shared/store/use-notification-store.ts';
 import type { QuestionType } from '../../../../shared/types/apiTypes.ts';
+import { MyDialog } from '../../../../shared/ui/MyDialog.tsx';
 import { Question } from './Question.tsx';
 
-interface newQuestion {
+export interface newQuestionType {
   botId: string;
   text: string;
   answers?: string[];
@@ -40,6 +47,10 @@ const TabQuestions: React.FC<TabQuestionsProps> = ({ botId }) => {
     null
   );
   const [isCreating, setIsCreating] = useState<boolean>(false);
+  const [errorGet, setErrorGet] = useState<boolean>(false);
+  const [questionToDelete, setQuestionToDelete] = useState<string | null>(
+    null
+  );
   const {
     register,
     control,
@@ -61,33 +72,19 @@ const TabQuestions: React.FC<TabQuestionsProps> = ({ botId }) => {
 
   const fetchData = async (botIdFetch: string) => {
     setIsLoading(true);
+    setErrorGet(false);
     try {
-      const response = await axios.get(
-        `http://localhost:3006/questions?botId=${botIdFetch}`
-      );
-      console.log(response);
-      if (response.status < 200 || response.status >= 300) {
-        throw new Error(`HTTP error! status: ${response.status}`);
-      }
-      console.log(response);
-      setQuestions(response.data);
+      const response = await getQuestions(botIdFetch);
+      setQuestions(response);
     } catch (error) {
-      if (axios.isAxiosError(error)) {
-        if (error.response) {
-          console.error('Server error:', error.response.status);
-        } else if (error.request) {
-          console.error('Network error:', error.message);
-        } else {
-          console.error('Request error:', error.message);
-        }
-      } else {
-        console.error(
-          `Произошла ошибка: ${error instanceof Error
-            ? error.message
-            : 'Неизвестная ошибка'
-          }`
-        );
-      }
+      setErrorGet(true);
+      addNotification(
+        error instanceof Error
+          ? error.message
+          : 'Неизвестная ошибка в Questions',
+        'error',
+        6000
+      );
     } finally {
       setIsLoading(false);
     }
@@ -99,11 +96,11 @@ const TabQuestions: React.FC<TabQuestionsProps> = ({ botId }) => {
 
   const onSubmit = async (data: FormValues) => {
     if (data.answers.some((a) => !a.value.trim())) {
-      alert('Все ответы должны быть заполнены!');
+      addNotification('Все ответы должны быть заполнены', 'error', 6000);
       return;
     }
 
-    const newQuestion: newQuestion = {
+    const newQuestion: newQuestionType = {
       botId,
       text: data.questionText.trim(),
       answers: data.answers.map((a) => a.value.trim()),
@@ -111,27 +108,36 @@ const TabQuestions: React.FC<TabQuestionsProps> = ({ botId }) => {
 
     setIsCreating(true);
     try {
-      const response = await axios.post(
-        'http://localhost:3006/questions',
-        newQuestion
-      );
-      setQuestions((prev) => [response.data, ...prev]);
+      const response = await createQuestions(newQuestion);
+      setQuestions((prev) => [response, ...prev]);
+      addNotification('Вопрос успешно добавлен!', 'success', 6000);
       reset();
     } catch (error) {
-      alert('Ошибка при создании вопроса!');
+      addNotification(
+        error instanceof Error
+          ? error.message
+          : 'Неизвестная ошибка при создании вопроса',
+        'error',
+        6000
+      );
     } finally {
       setIsCreating(false);
     }
   };
 
   const handleDeleteQuestion = async (id: string) => {
-    if (!window.confirm('Удалить вопрос?')) return;
     setQuestionLoadingId(id);
     setQuestions((prev) => prev.filter((q) => q.id !== id));
     try {
       await axios.delete(`http://localhost:3006/questions/${id}`);
-    } catch (e) {
-      alert('Ошибка при удалении!');
+    } catch (error) {
+      addNotification(
+        error instanceof Error
+          ? error.message
+          : 'Неизвестная ошибка при удалении',
+        'error',
+        6000
+      );
       fetchData(botId);
     } finally {
       setQuestionLoadingId(null);
@@ -215,30 +221,52 @@ const TabQuestions: React.FC<TabQuestionsProps> = ({ botId }) => {
 
       <Divider sx={{ mb: 3 }} />
 
-      <Typography gutterBottom variant="h5">
-        Созданные вопросы:
+      <Typography variant="h5" gutterBottom>
+        Созданые вопросы
       </Typography>
+
       <List>
         {isLoading && (
           <Box sx={{ p: 2 }} display="flex" justifyContent="center">
             <CircularProgress />
           </Box>
         )}
-        {!isLoading &&
-          (!dataQuestions || dataQuestions.length === 0) && (
-          <Box sx={{ p: 2 }}>Нет вопросов</Box>
+        {!isLoading && errorGet && (
+          <Box sx={{ p: 2 }}>
+            <Typography color="error">
+              Ошибка при получении вопросов
+            </Typography>
+          </Box>
         )}
         {!isLoading &&
+          !errorGet &&
+          (!dataQuestions || dataQuestions.length === 0) && (
+            <Box sx={{ p: 2 }}>Нет вопросов</Box>
+          )}
+        {!isLoading &&
+          !errorGet &&
           dataQuestions?.length > 0 &&
           dataQuestions.map((question) => (
             <Question
               key={question.id}
               question={question}
-              onDelete={handleDeleteQuestion}
+              onDelete={() => setQuestionToDelete(question.id)}
               loading={questionLoadingId === question.id}
             />
           ))}
       </List>
+
+      <MyDialog
+        open={!!questionToDelete}
+        onClose={() => setQuestionToDelete(null)}
+        onConfirm={() => {
+          if (questionToDelete) {
+            handleDeleteQuestion(questionToDelete);
+            setQuestionToDelete(null);
+          }
+        }}
+        title="Удалить вопрос?"
+      />
     </Paper>
   );
 };

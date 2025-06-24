@@ -1,6 +1,7 @@
 // import { apiErrorHandle } from './apiErrorHandler';
 import axios from 'axios';
 import { apiBots } from './config.ts';
+import type { newQuestionType } from '../../pages/BotPage/components/TabQuestionsCreate/TabQuestions.tsx';
 
 export const getBots = async () => {
   const response = await apiBots.get('/bots');
@@ -61,12 +62,31 @@ export const deleteBot = async (botId: number) => {
   // return response.data[0];
 };
 
-
+// Responses
 export const getResponses = async (botId: string) => {
-  const response = await axios.get(`http://localhost:3006/responses?botId=${botId}`);
+  const response = await apiBots.get(`responses?botId=${botId}`);
+  return response.data;
+};
+// Responses Questions
+export const getQuestions = async (botId: string) => {
+  const response = await apiBots.get(`questions?botId=${botId}`);
   return response.data;
 };
 
+export const createQuestions = async (newQuestionData: newQuestionType) => {
+  const response = await apiBots.post('questions', newQuestionData);
+  return response.data;
+};
+
+export const updateQuestions = async (botId: string) => {
+  const response = await apiBots.get(`responses?botId=${botId}`);
+  return response.data;
+};
+
+export const deleteQuestions = async (botId: string) => {
+  const response = await apiBots.get(`responses?botId=${botId}`);
+  return response.data;
+};
 // GET http://localhost:3006/responses?botId=1
 
 // GET http://localhost:3006/answers?questionId=q1onses
