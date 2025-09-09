@@ -24,7 +24,7 @@ npm install
 4. Запустите проект:
 
 ```bash
-npm run dev
+npm run davS
 ```
 
 ## 🔑 Авторизация
