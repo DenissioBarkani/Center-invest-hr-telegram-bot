@@ -1,6 +1,7 @@
 import { zodResolver } from '@hookform/resolvers/zod';
 import { SmartToy } from '@mui/icons-material';
 import {
+  Alert,
   Avatar,
   Box,
   Button,
@@ -31,6 +32,7 @@ const LoginPage: React.FC = () => {
   const {
     register,
     handleSubmit,
+    setValue,
     formState: { errors, isSubmitting },
   } = useForm<LoginFormData>({
     resolver: zodResolver(schema),
@@ -39,16 +41,16 @@ const LoginPage: React.FC = () => {
 
   const onSubmit = async (data: LoginFormData) => {
     try {
-      // ⚠️ Здесь будет запрос к API — сейчас заглушка
-      // eslint-disable-next-line no-console
-      console.log('Отправка данных:', data);
       await login(data.email, data.password);
-      // login("mock_token_value");
       navigate('/');
-    } catch (err) {
-      // eslint-disable-next-line no-console
-      console.error('Ошибка авторизации', err);
+    } catch {
+      // Демонстрационный вход не предполагает серверных ошибок.
     }
+  };
+
+  const fillDemoData = () => {
+    setValue('email', 'demo@center-invest.ru', { shouldValidate: true });
+    setValue('password', 'portfolio', { shouldValidate: true });
   };
 
   return (
@@ -69,6 +71,11 @@ const LoginPage: React.FC = () => {
         <Typography component="h1" variant="h5">
           Вход в систему
         </Typography>
+
+        <Alert severity="info" sx={{ mt: 3, width: '100%' }}>
+          Это демо-версия. Введите любой корректный email и пароль от 6 символов
+          или заполните данные автоматически.
+        </Alert>
 
         <Box
           component="form"
@@ -103,6 +110,15 @@ const LoginPage: React.FC = () => {
             disabled={isSubmitting}
           >
             {isSubmitting ? 'Вход...' : 'Войти'}
+          </Button>
+
+          <Button
+            type="button"
+            fullWidth
+            variant="outlined"
+            onClick={fillDemoData}
+          >
+            Заполнить демо-данные
           </Button>
         </Box>
       </Box>
